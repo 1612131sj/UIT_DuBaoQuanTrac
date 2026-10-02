@@ -41,7 +41,6 @@ PROJECT/
 │   └── explainability.py      # Trực quan hóa suy luận của AI bằng SHAP
 ├── app.py                     # Giao diện Web tương tác bằng Streamlit
 ├── requirements.txt           # Danh sách thư viện cần thiết
-└── project_roadmap.md         # Tài liệu dàn ý báo cáo/thuyết trình
 ```
 
 ---
