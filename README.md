@@ -91,6 +91,6 @@ streamlit run app.py
 ---
 
 ## 📌 Khuyến nghị cho Dữ liệu Mới
-Nếu bạn thay đổi một bộ dữ liệu quan trắc mới (từ một khu công nghiệp khác), hãy đảm bảo:
+Nếu cần thay đổi một bộ dữ liệu quan trắc mới (từ một khu công nghiệp khác), các bước thực hiện như sau:
 1. Xóa các file cũ trong thư mục `data/processed/`, `models/` và `outputs/`.
 2. Đặt dữ liệu mới vào `data/raw/` và chạy lại từ **Bước 1** đến **Bước 4** để hệ thống học lại từ đầu quy luật của dòng nước mới.

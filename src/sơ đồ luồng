@@ -1,0 +1,20 @@
+; https://mermaid.live
+graph TD
+    A[Hệ thống AI dự báo COD t+1] --> B{Dự báo COD > Ngưỡng?}
+    B -- Không (An Toàn) --> C[Lưu Log & Tiếp tục giám sát]
+    B -- Có (Vượt chuẩn) --> D[Kích hoạt Báo động Đỏ]
+    
+    D --> E[Gửi SMS/Email khẩn đến Ban quản lý KCN]
+    D --> F[Trích xuất biểu đồ SHAP xác định nguyên nhân]
+    
+    E --> G[Kiểm tra lại Van xả thải]
+    F --> G
+    
+    G --> H{Cần can thiệp?}
+    H -- Có --> I[Khóa van xả khẩn cấp & Phân luồng về hồ sự cố]
+    H -- Không --> J[Theo dõi thủ công trong 30 phút]
+    
+    style A fill:#4CAF50,stroke:#388E3C,stroke-width:2px,color:white
+    style B fill:#FF9800,stroke:#F57C00,stroke-width:2px,color:white
+    style D fill:#F44336,stroke:#D32F2F,stroke-width:2px,color:white
+    style I fill:#F44336,stroke:#D32F2F,stroke-width:2px,color:white
