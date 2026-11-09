@@ -1,136 +1,152 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import joblib
+"""
+Ứng dụng Streamlit dự báo COD(t+1).
+Chạy: streamlit run app.py   (cần chạy `python run_all.py` trước để có models/v2/)
+
+- Thanh trượt giới hạn trong [min, max] của tập train; chế độ nhập tự do có cảnh báo ngoài khoảng train.
+- Ngưỡng cảnh báo COD theo QCVN 40:2025/BTNMT đặt trong dict cấu hình, chọn được cột A/B.
+- SHAP waterfall tính cho chính mô hình đang dự báo (exact Shapley, nền 200 mẫu train, thang mg/L).
+"""
 import os
+import json
+import joblib
+import numpy as np
+import pandas as pd
 import shap
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import streamlit as st
 
-# --- 1. SETUP PAGE ---
-# Cấu hình giao diện Streamlit
-st.set_page_config(page_title="Hệ thống Dự báo Ô nhiễm KCN", layout="wide", page_icon="💧")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+import sys
+sys.path.insert(0, os.path.join(BASE_DIR, "src"))   # để joblib tìm được lớp trong src/ensemble_models.py
+MODELS_DIR = os.path.join(BASE_DIR, "models", "v2")
+TAB_DIR = os.path.join(BASE_DIR, "outputs", "v2", "tables")
+FEATURES = ['COD', 'TSS', 'pH', 'Temp', 'NH4+', 'Color', 'Flow2', 'Flow1']
+LABELS = {'COD': 'COD (mg/L)', 'TSS': 'TSS (mg/L)', 'pH': 'pH', 'Temp': 'Nhiệt độ (°C)',
+          'NH4+': 'NH4+ (mg/L)', 'Color': 'Độ màu (Pt-Co)', 'Flow2': 'Flow2 (m³/h)', 'Flow1': 'Flow1 (m³/h)'}
 
-# Đảm bảo hiển thị font rõ nét
-plt.rcParams.update({'font.size': 10})
+# ------------------------------------------------------------------
+# CẤU HÌNH NGƯỠNG COD THEO QCVN 40:2025/BTNMT
+# Nguồn: QCVN 40:2025/BTNMT – Quy chuẩn kỹ thuật quốc gia về nước thải công nghiệp.
+# cod_max: giá trị giới hạn COD (mg/L) của từng cột theo bảng giới hạn trong quy chuẩn.
+# Khi cod_max = None, ứng dụng chỉ hiển thị giá trị dự báo, không phân loại cảnh báo.
+# ------------------------------------------------------------------
+QCVN_40_2025 = {
+    'A': {'cod_max': None, 'mo_ta': 'Cột A (xả vào nguồn nước dùng cho cấp nước sinh hoạt)'},
+    'B': {'cod_max': None, 'mo_ta': 'Cột B (xả vào nguồn nước không dùng cho cấp nước sinh hoạt)'},
+}
+WARNING_RATIO = 0.8   # mức "cảnh giác" khi dự báo ≥ 80% ngưỡng
 
-# --- 2. LOAD MODELS ---
+st.set_page_config(page_title="Dự báo COD – KCN", layout="wide", page_icon="💧")
+
+
 @st.cache_resource
-def load_models():
-    """Hàm tải mô hình (dùng cache để web không bị chậm khi tải lại)"""
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    # Dùng StackingEnsemble để dự đoán cho chính xác nhất
-    model = joblib.load(os.path.join(BASE_DIR, "models", "StackingEnsemble.pkl"))
-    # Dùng ExtraTrees để SHAP giải thích cho nhanh và tương thích tốt
-    shap_model = joblib.load(os.path.join(BASE_DIR, "models", "ExtraTrees.pkl"))
-    scaler = joblib.load(os.path.join(BASE_DIR, "models", "minmax_scaler.pkl"))
-    return model, shap_model, scaler
+def load_artifacts():
+    models = {}
+    for f in sorted(os.listdir(MODELS_DIR)):
+        if f.endswith('.pkl'):
+            models[f[:-4]] = joblib.load(os.path.join(MODELS_DIR, f))
+    with open(os.path.join(MODELS_DIR, "train_ranges.json"), encoding='utf-8') as f:
+        ranges = json.load(f)
+    bg = np.load(os.path.join(MODELS_DIR, "shap_background.npy"))
+    metrics = pd.read_csv(os.path.join(TAB_DIR, "model_metrics.csv")).set_index('Model')
+    return models, ranges, bg, metrics
+
+
+@st.cache_resource
+def get_explainer(model_name):
+    model = MODELS[model_name]
+    return shap.Explainer(model.predict, shap.maskers.Independent(BG, max_samples=len(BG)),
+                          algorithm='exact', feature_names=FEATURES)
+
 
 try:
-    model, shap_model, scaler = load_models()
-    features = ['COD', 'TSS', 'pH', 'Temp', 'NH4+', 'Color', 'Flow2', 'Flow1']
+    MODELS, RANGES, BG, METRICS = load_artifacts()
 except Exception as e:
-    st.error(f"Lỗi tải mô hình. Vui lòng đảm bảo bạn đã chạy Bước 3 (train_pipeline.py) thành công. Lỗi: {e}")
+    st.error(f"Không tải được mô hình trong models/v2/. Hãy chạy `python run_all.py` trước. Lỗi: {e}")
     st.stop()
 
-# --- 3. UI: GIAO DIỆN CHÍNH ---
-st.title("💧 Hệ thống Cảnh báo Sớm Ô nhiễm Nước thải")
-st.markdown("""
-Ứng dụng **Trí tuệ nhân tạo (AI)** để dự báo nồng độ COD ở thời điểm tương lai ($t+1$) dựa trên dữ liệu trạm quan trắc hiện tại ($t$).
-""")
+# ------------------------------- Thanh bên -------------------------------
+st.sidebar.header("⚙️ Cấu hình")
+names = [m for m in METRICS.index if m in MODELS]
+learned = [m for m in names if m != 'Persistence']
+default = METRICS.loc[learned, 'RMSE_mean'].idxmin()
+model_name = st.sidebar.selectbox(
+    "Mô hình dự báo", names, index=names.index(default),
+    format_func=lambda m: f"{m} (RMSE test = {METRICS.loc[m, 'RMSE_mean']:.3f} mg/L)")
+col = st.sidebar.radio("Cột quy chuẩn QCVN 40:2025/BTNMT", ['A', 'B'],
+                       format_func=lambda c: QCVN_40_2025[c]['mo_ta'])
+free_input = st.sidebar.checkbox("Nhập số tự do (cho phép ngoài khoảng train)", value=False)
+st.sidebar.caption("Mặc định chọn mô hình học máy có RMSE test thấp nhất. "
+                   "Persistence (ŷ(t+1) = COD(t)) là baseline để đối chiếu.")
 
-st.subheader("📊 1. Điều chỉnh Thông số Cảm biến Hiện tại")
+# ------------------------------- Nhập liệu -------------------------------
+st.title("💧 Dự báo COD chu kỳ kế tiếp (t + 5 phút)")
+st.markdown("Dự báo nồng độ COD ở chu kỳ quan trắc kế tiếp (5 phút) từ 8 thông số tại thời điểm hiện tại "
+            "của trạm LA_KCN_ANHHON.")
+st.subheader("1. Thông số cảm biến hiện tại (t)")
 
-# Tạo 4 cột trên màn hình chính
-col1, col2, col3, col4 = st.columns(4)
+values = {}
+cols = st.columns(4)
+for i, f in enumerate(FEATURES):
+    lo, hi, med = RANGES[f]
+    with cols[i % 4]:
+        with st.container(border=True):
+            if free_input:
+                values[f] = st.number_input(LABELS[f], value=float(round(med, 2)), step=0.1, format="%.2f")
+            else:
+                values[f] = st.slider(LABELS[f], float(round(lo, 2)), float(round(hi, 2)),
+                                      float(round(med, 2)), 0.01)
+            st.caption(f"Khoảng train: {lo:.2f} – {hi:.2f}")
 
-with col1:
-    with st.container(border=True):
-        cod = st.slider("COD (mg/L)", 0.0, 150.0, 15.0, 0.5)
-    with st.container(border=True):
-        nh4 = st.slider("NH4+ (mg/L)", 0.0, 50.0, 1.2, 0.1)
-
-with col2:
-    with st.container(border=True):
-        tss = st.slider("TSS (mg/L)", 0.0, 100.0, 10.0, 0.5)
-    with st.container(border=True):
-        color = st.slider("Color (Pt-Co)", 0.0, 100.0, 15.0, 0.5)
-
-with col3:
-    with st.container(border=True):
-        ph = st.slider("pH", 0.0, 14.0, 7.5, 0.1)
-    with st.container(border=True):
-        flow1 = st.slider("Flow1 (m3/h)", 0.0, 200.0, 73.0, 1.0)
-
-with col4:
-    with st.container(border=True):
-        temp = st.slider("Nhiệt độ (oC)", 20.0, 45.0, 32.0, 0.1)
-    with st.container(border=True):
-        flow2 = st.slider("Flow2 (m3/h)", 0.0, 200.0, 81.0, 1.0)
-
-# Gom dữ liệu thành DataFrame
-input_df = pd.DataFrame({
-    'COD': [cod], 'TSS': [tss], 'pH': [ph], 'Temp': [temp],
-    'NH4+': [nh4], 'Color': [color], 'Flow2': [flow2], 'Flow1': [flow1]
-})
+x = np.array([[values[f] for f in FEATURES]], dtype=float)
+outside = [f for f in FEATURES if not (RANGES[f][0] <= values[f] <= RANGES[f][1])]
+if outside:
+    st.warning("⚠️ Các thông số nằm NGOÀI khoảng dữ liệu huấn luyện: "
+               + ", ".join(f"{LABELS[f]} = {values[f]:.2f} (train: {RANGES[f][0]:.2f}–{RANGES[f][1]:.2f})"
+                           for f in outside)
+               + ". Mô hình dạng cây không ngoại suy được – kết quả kém tin cậy.")
 
 st.divider()
+st.subheader(f"2. Kết quả dự báo COD(t+1) – mô hình {model_name}")
 
-# --- 5. PREDICT & EXPLAIN ---
-st.subheader("🎯 2. Kết quả Dự báo (t+1)")
-
-if st.button("🚀 Thực hiện Dự báo", type="primary"):
-    with st.spinner('AI đang tính toán...'):
-        # Chuẩn hóa dữ liệu đầu vào
-        input_scaled = scaler.transform(input_df)
-        
-        # Dự đoán
-        prediction = model.predict(input_scaled)[0]
-        
-        # Khung hiển thị kết quả trực quan
-        st.markdown("### Nồng độ COD dự báo:")
-        
-        # Phân loại cảnh báo
-        if prediction > 75:
-            st.error(f"## {prediction:.2f} mg/L\n⚠️ CẢNH BÁO ĐỎ: Vượt tiêu chuẩn A (Nguy cơ ô nhiễm cao!)")
-        elif prediction > 30:
-            st.warning(f"## {prediction:.2f} mg/L\n⚡ MỨC TRUNG BÌNH: Nước bắt đầu có dấu hiệu ô nhiễm.")
+if st.button("🚀 Thực hiện dự báo", type="primary"):
+    model = MODELS[model_name]
+    pred = float(model.predict(x)[0])
+    thr = QCVN_40_2025[col]['cod_max']
+    c1, c2 = st.columns([1, 2])
+    with c1:
+        st.metric("COD dự báo (mg/L)", f"{pred:.2f}", delta=f"{pred - values['COD']:+.2f} so với COD(t)",
+                  delta_color="inverse")
+    with c2:
+        if thr is None:
+            st.info(f"Chưa cấu hình ngưỡng COD cho {QCVN_40_2025[col]['mo_ta']} trong `QCVN_40_2025` "
+                    "(app.py) – không phân loại cảnh báo.")
+        elif pred > thr:
+            st.error(f"🔴 VƯỢT ngưỡng cột {col}: {pred:.2f} > {thr} mg/L")
+        elif pred >= WARNING_RATIO * thr:
+            st.warning(f"🟠 Gần ngưỡng cột {col}: {pred:.2f} mg/L ≥ {WARNING_RATIO:.0%} × {thr} mg/L")
         else:
-            st.success(f"## {prediction:.2f} mg/L\n✅ AN TOÀN: Đạt tiêu chuẩn xả thải.")
-            
-        st.divider()
-        st.subheader("🧠 3. Trí tuệ nhân tạo Giải thích")
-        st.markdown("Biểu đồ SHAP thể hiện lý do: Yếu tố nào đã **đẩy COD tăng lên** (Màu Đỏ) và yếu tố nào giúp **kéo COD giảm xuống** (Màu Xanh).")
-        
-        # Tính toán SHAP
-        explainer = shap.TreeExplainer(shap_model)
-        shap_values = explainer.shap_values(input_scaled)
-        
-        # Vẽ biểu đồ Local Impact bằng Matplotlib
-        # Đặt facecolor='white' để chữ không bị chìm vào nền đen của giao diện Dark Mode
-        fig, ax = plt.subplots(figsize=(10, 5), facecolor='black', layout='constrained')
-        ax.set_facecolor('black')
-        
-        sv = shap_values[0] # Lấy mảng SHAP của người dùng nhập
-        
-        shap_data = pd.DataFrame({'Feature': features, 'SHAP Value': sv})
-        shap_data['Positive'] = shap_data['SHAP Value'] > 0
-        shap_data = shap_data.sort_values(by='SHAP Value', key=abs)
-        
-        colors = shap_data['Positive'].map({True: 'crimson', False: 'cornflowerblue'})
-        bars = ax.barh(shap_data['Feature'], shap_data['SHAP Value'], color=colors)
-        
-        # Thêm con số (giá trị SHAP) lên từng thanh
-        ax.bar_label(bars, fmt=' %+.2f', padding=3, fontweight='bold')
-        
-        # Căn chỉnh lại biểu đồ cho đẹp
-        ax.set_xlabel("Mức độ tác động đến kết quả dự báo (SHAP Value)")
-        ax.axvline(0, color='black', linewidth=1)
-        ax.grid(axis='x', linestyle='--', alpha=0.7)
-        
-        # Đảm bảo chữ không bị cắt xén
-        fig.tight_layout()
-        
-        st.pyplot(fig)
-else:
-    st.info("👈 Vui lòng bấm nút 'Thực hiện Dự báo' để xem kết quả.")
+            st.success(f"🟢 Dưới ngưỡng cột {col}: {pred:.2f} < {thr} mg/L")
 
+    st.subheader("3. Giải thích dự báo (SHAP waterfall)")
+    st.caption(f"Giá trị Shapley chính xác (thuật toán exact, 2⁸ tổ hợp) cho chính mô hình {model_name}, "
+               f"nền = {len(BG)} mẫu ngẫu nhiên từ train, đơn vị mg/L. "
+               "Thanh đỏ đẩy dự báo lên, thanh xanh kéo xuống so với giá trị nền E[f(X)].")
+    with st.spinner("Đang tính SHAP..."):
+        sv = get_explainer(model_name)(x)
+    ex = shap.Explanation(values=sv.values[0], base_values=float(np.atleast_1d(sv.base_values)[0]),
+                          data=x[0], feature_names=[LABELS[f] for f in FEATURES])
+    plt.close('all')
+    shap.plots.waterfall(ex, max_display=8, show=False)
+    fig = plt.gcf()
+    fig.set_size_inches(9, 4.5)
+    fig.patch.set_facecolor('white')
+    st.pyplot(fig, clear_figure=True)
+    st.dataframe(pd.DataFrame({'Thông số': [LABELS[f] for f in FEATURES], 'Giá trị (t)': x[0],
+                               'SHAP (mg/L)': sv.values[0]}).sort_values('SHAP (mg/L)', key=abs,
+                                                                         ascending=False),
+                 hide_index=True, use_container_width=True)
+else:
+    st.info("Bấm **Thực hiện dự báo** để xem kết quả.")
