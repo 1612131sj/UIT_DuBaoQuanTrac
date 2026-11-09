@@ -7,3 +7,6 @@ shap>=0.42.0
 streamlit>=1.28.0
 matplotlib>=3.7.0
 seaborn>=0.12.0
+statsmodels>=0.14.0
+scipy>=1.10.0
+joblib>=1.2.0
