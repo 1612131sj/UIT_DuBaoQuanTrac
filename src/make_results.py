@@ -451,7 +451,7 @@ def changes_section(m):
         "(nền 200 mẫu train), thay vì ExtraTrees trên dữ liệu đã scale. Thêm TreeSHAP của XGBoost/CatBoost để đối chiếu.",
         "10. **Tầm dự báo:** thêm thí nghiệm h = 5, 30, 60, 120 phút với đặc trưng trễ và trượt của COD.",
         "11. **Ứng dụng:** thanh trượt giới hạn trong khoảng train, có cảnh báo khi nhập ngoài khoảng; ngưỡng theo "
-        "QCVN 40:2025/BTNMT nằm trong dict cấu hình (cần điền); SHAP waterfall cho đúng mô hình đang dự báo; mặc định "
+        "QCVN 40:2025/BTNMT (theo lưu lượng xả F, cột A/B/C) nằm trong dict cấu hình; SHAP waterfall cho đúng mô hình đang dự báo; mặc định "
         "chọn mô hình học máy có RMSE test thấp nhất.",
     ]
     txt = '\n'.join(lines)

@@ -80,7 +80,7 @@ tầm dự báo → vẽ hình → tính SHAP → sinh `outputs/v2/RESULTS.md`. 
 ```bash
 streamlit run app.py
 ```
-Ngưỡng COD theo QCVN 40:2025/BTNMT cần được điền vào dict `QCVN_40_2025` trong `app.py`.
+Ngưỡng cảnh báo COD lấy theo QCVN 40:2025/BTNMT (theo lưu lượng xả F và cột A/B/C), cấu hình trong dict `QCVN_40_2025` của `app.py`.
 
 ---
 

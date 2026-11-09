@@ -1,6 +1,6 @@
 # KẾT QUẢ PIPELINE v2 – DỰ BÁO COD TRẠM LA_KCN_ANHHON
 
-*Tệp này được sinh tự động bởi `src/make_results.py` lúc 2026-11-09 08:57 từ các file trong `outputs/v2/tables/`. Không có con số nào được nhập tay.*
+*Tệp này được sinh tự động bởi `src/make_results.py` lúc 2026-11-09 11:25 từ các file trong `outputs/v2/tables/`. Không có con số nào được nhập tay.*
 
 Chạy lại toàn bộ: `python run_all.py`. Số thập phân dùng dấu chấm; đơn vị COD là mg/L.
 
@@ -362,7 +362,7 @@ Thời gian tính SHAP Stacking (exact): 599.1 s; sai số cộng tính lớn nh
 8. **Đánh giá:** thêm MAPE, Skill so với Persistence; chạy 5 seed (42–46) và báo cáo mean ± std; kiểm định Diebold–Mariano (HLN + HAC) và Wilcoxon; đo thời gian bằng `time.perf_counter`.
 9. **SHAP:** giải thích **chính mô hình Stacking** ở thang mg/L gốc bằng `shap.Explainer(algorithm='exact')` (nền 200 mẫu train), thay vì ExtraTrees trên dữ liệu đã scale. Thêm TreeSHAP của XGBoost/CatBoost để đối chiếu.
 10. **Tầm dự báo:** thêm thí nghiệm h = 5, 30, 60, 120 phút với đặc trưng trễ và trượt của COD.
-11. **Ứng dụng:** thanh trượt giới hạn trong khoảng train, có cảnh báo khi nhập ngoài khoảng; ngưỡng theo QCVN 40:2025/BTNMT nằm trong dict cấu hình (cần điền); SHAP waterfall cho đúng mô hình đang dự báo; mặc định chọn mô hình học máy có RMSE test thấp nhất.
+11. **Ứng dụng:** thanh trượt giới hạn trong khoảng train, có cảnh báo khi nhập ngoài khoảng; ngưỡng theo QCVN 40:2025/BTNMT (theo lưu lượng xả F, cột A/B/C) nằm trong dict cấu hình; SHAP waterfall cho đúng mô hình đang dự báo; mặc định chọn mô hình học máy có RMSE test thấp nhất.
 
 **Bảng 18. Đối chiếu số liệu cũ (`tables/previous_model_metrics.csv`) và mới.** Số cũ được tính khi target đã bị clip, cặp t→t+1 nối qua gap, Stacking dùng KFold và chỉ chạy 1 seed, nên không so sánh trực tiếp được; bảng này chỉ để thấy mức độ thay đổi.
 
