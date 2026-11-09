@@ -1,0 +1,336 @@
+
+======================================================================
+▶ Ghi thông tin môi trường
+======================================================================
+Thời điểm ghi: 2026-11-09 07:48:19
+OS: Windows-11-10.0.26200-SP0
+CPU: 13th Gen Intel(R) Core(TM) i5-1335U
+Số luồng logic (os.cpu_count): 12
+RAM: 15.6 GB
+Python: 3.13.9
+Seed chính: 42; các seed: [42, 43, 44, 45, 46]
+Ghi chú luồng: sklearn mặc định 1 luồng (n_jobs=None); XGBoost và CatBoost mặc định dùng mọi luồng.
+
+Phiên bản thư viện:
+  numpy==2.5.3
+  pandas==3.0.6
+  sklearn==1.9.1
+  xgboost==3.4.1
+  catboost==1.2.10
+  shap==0.52.0
+  scipy==1.18.1
+  statsmodels==0.15.0
+  matplotlib==3.11.2
+  seaborn==0.13.2
+  streamlit==1.64.0
+  joblib==1.6.0
+✓ Ghi thông tin môi trường: 2.0 s
+
+======================================================================
+▶ Việc 1–2: Kiểm tra dữ liệu & tiền xử lý
+======================================================================
+=== AUDIT THỜI GIAN ===
+  Số bản ghi (file): 6544
+  Số Timestamp trùng lặp: 0
+  Bắt đầu: 2026-01-01 00:05:00
+  Kết thúc: 2026-01-23 21:50:00
+  Tổng thời gian bao phủ (ngày): 22.9062
+  Số chu kỳ 5 phút kỳ vọng: 6598
+  Số chu kỳ bị thiếu: 54
+  Tỉ lệ đầy đủ theo thời gian (%): 99.182
+  Số khoảng trống (gap != 5 phút): 4
+  Số đoạn liên tục: 5
+  Số cặp (t, t+1) nếu shift thẳng (cách cũ): 6543
+  Số cặp (t, t+1) hợp lệ (cách đúng 5 phút): 6539
+  Số cặp bị loại vì nối qua gap: 4
+  Mốc chia train/test (bản ghi test đầu tiên): 2026-01-19 05:15:00
+  Số bản ghi giai đoạn train: 5235
+  Số bản ghi giai đoạn test: 1309
+  Số cặp train (h=1, sau purge): 5231
+  Số cặp test (h=1): 1307
+
+=== CÁC KHOẢNG TRỐNG ===
+ Từ (bản ghi trước gap) Đến (bản ghi sau gap)  Khoảng cách (phút)  Số chu kỳ bị thiếu
+   2026-01-01 00:55:00   2026-01-01 01:05:00                10.0                   1
+   2026-01-01 01:20:00   2026-01-01 02:00:00                40.0                   7
+   2026-01-01 02:00:00   2026-01-01 02:20:00                20.0                   3
+   2026-01-22 13:00:00   2026-01-22 16:40:00               220.0                  43
+
+=== AUDIT THEO CỘT ===
+  Cột  Tỉ lệ thiếu (%)  Status ≠ 00 (coi là thiếu) Có clip?  Clip dưới (train)  Clip trên (train)  Clip dưới (test)  Clip trên (test)  Ngoài ngưỡng IQR (train)  Ngoài ngưỡng IQR (test)
+  COD           0.0000                           0    Không                  0                  0                 0                 0                       754                        0
+  TSS           0.0000                           0       Có                393                226                 0               101                       619                      101
+   pH           0.0000                           0       Có                172                 87                33                55                       259                       88
+ Temp           0.0000                           0       Có                348                  0                 0                 0                       348                        0
+ NH4+           0.0000                           0       Có                224                144                 0                56                       368                       56
+Color           0.0306                           2       Có                  0                 78                 0                 4                        78                        4
+Flow2           0.0000                           0       Có                 53                  0                14                 0                        53                       14
+Flow1           0.0000                           0       Có                  0                  0                 0                 0                         0                        0
+
+=== COD train vs test ===
+         count    mean    std   min    25%    50%    75%    max   skew
+Test   1309.0  11.806  1.640  6.92  11.18  11.91  12.81  15.64 -0.863
+Train  5235.0  13.594  7.537  0.44   9.75  11.25  14.67  43.22  1.656
+✓ Việc 1–2: Kiểm tra dữ liệu & tiền xử lý: 3.0 s
+
+======================================================================
+▶ Việc 3–4: Huấn luyện, baseline, kiểm định, thời gian
+======================================================================
+Train: (5231, 8), Test: (1307, 8)
+   seed=42 Persistence       RMSE=0.2430  train=0.00s
+   seed=42 LinearRegression  RMSE=0.2497  train=0.01s
+   seed=42 RandomForest      RMSE=0.6648  train=4.41s
+   seed=42 ExtraTrees        RMSE=0.5292  train=2.83s
+   seed=42 GradientBoosting  RMSE=0.9508  train=1.32s
+   seed=42 AdaBoost          RMSE=1.4893  train=0.89s
+   seed=42 XGBoost           RMSE=0.7565  train=0.46s
+   seed=42 CatBoost          RMSE=0.5598  train=0.70s
+   seed=42 Stacking          RMSE=1.5746  train=29.04s
+   seed=43 RandomForest      RMSE=0.6778  train=2.02s
+   seed=43 ExtraTrees        RMSE=0.5244  train=1.17s
+   seed=43 GradientBoosting  RMSE=0.9555  train=0.72s
+   seed=43 AdaBoost          RMSE=1.5269  train=0.44s
+   seed=43 XGBoost           RMSE=0.7565  train=0.20s
+   seed=43 CatBoost          RMSE=0.6147  train=0.26s
+   seed=43 Stacking          RMSE=1.6545  train=18.46s
+   seed=44 RandomForest      RMSE=0.6705  train=1.99s
+   seed=44 ExtraTrees        RMSE=0.5076  train=1.23s
+   seed=44 GradientBoosting  RMSE=0.9256  train=0.70s
+   seed=44 AdaBoost          RMSE=1.6464  train=0.48s
+   seed=44 XGBoost           RMSE=0.7565  train=0.47s
+   seed=44 CatBoost          RMSE=0.6651  train=0.43s
+   seed=44 Stacking          RMSE=1.2779  train=33.33s
+   seed=45 RandomForest      RMSE=0.6433  train=3.75s
+   seed=45 ExtraTrees        RMSE=0.5246  train=1.21s
+   seed=45 GradientBoosting  RMSE=0.9043  train=1.05s
+   seed=45 AdaBoost          RMSE=1.5960  train=1.31s
+   seed=45 XGBoost           RMSE=0.7565  train=0.60s
+   seed=45 CatBoost          RMSE=0.6895  train=0.46s
+   seed=45 Stacking          RMSE=1.3153  train=43.15s
+   seed=46 RandomForest      RMSE=0.7136  train=4.97s
+   seed=46 ExtraTrees        RMSE=0.5095  train=2.75s
+   seed=46 GradientBoosting  RMSE=0.9033  train=1.52s
+   seed=46 AdaBoost          RMSE=1.7389  train=1.47s
+   seed=46 XGBoost           RMSE=0.7565  train=0.51s
+   seed=46 CatBoost          RMSE=0.8437  train=0.53s
+   seed=46 Stacking          RMSE=1.8302  train=41.74s
+
+            Model  R2_mean  RMSE_mean  RMSE_std  MAE_mean  MAPE_%_mean  Skill_vs_Persistence_mean
+     Persistence 0.977925   0.242997  0.000000  0.129250     1.132588                   0.000000
+LinearRegression 0.976691   0.249698  0.000000  0.144158     1.273026                  -0.027577
+    RandomForest 0.829967   0.674010  0.025602  0.476807     3.973513                  -1.773735
+      ExtraTrees 0.899247   0.519060  0.009788  0.396409     3.414433                  -1.136073
+GradientBoosting 0.677953   0.927868  0.024761  0.359123     2.952376                  -2.818430
+        AdaBoost 0.040625   1.599494  0.098817  1.433938    12.976592                  -5.582354
+         XGBoost 0.786044   0.756507  0.000000  0.613544     5.186606                  -2.113232
+        CatBoost 0.826466   0.674568  0.106868  0.528342     4.460033                  -1.776032
+        Stacking 0.108040   1.530493  0.233066  1.253758    10.679897                  -5.298397
+
+Mô hình đơn tốt nhất (RMSE trung bình): LinearRegression
+               So sánh (A vs B)  Seed   RMSE_A   RMSE_B  DM_stat (MSE)   DM_p (MSE)  Wilcoxon_p |e|
+   Stacking vs LinearRegression    42 1.574637 0.249698      12.129747 3.666167e-32   5.196686e-208
+        Stacking vs Persistence    42 1.574637 0.242997      12.152165 2.866064e-32   5.882075e-209
+LinearRegression vs Persistence    42 0.249698 0.242997       4.083774 4.700345e-05    2.723078e-37
+   Stacking vs LinearRegression    43 1.654542 0.249698      11.489828 3.551306e-29   1.506559e-205
+        Stacking vs Persistence    43 1.654542 0.242997      11.506578 2.977617e-29   5.348399e-207
+LinearRegression vs Persistence    43 0.249698 0.242997       4.083774 4.700345e-05    2.723078e-37
+   Stacking vs LinearRegression    44 1.277878 0.249698      11.574931 1.447722e-29   7.628522e-200
+        Stacking vs Persistence    44 1.277878 0.242997      11.604508 1.058536e-29   1.110842e-202
+LinearRegression vs Persistence    44 0.249698 0.242997       4.083774 4.700345e-05    2.723078e-37
+   Stacking vs LinearRegression    45 1.315252 0.249698       8.768669 5.527621e-18   2.179062e-198
+        Stacking vs Persistence    45 1.315252 0.242997       8.788717 4.671419e-18   7.602791e-201
+LinearRegression vs Persistence    45 0.249698 0.242997       4.083774 4.700345e-05    2.723078e-37
+   Stacking vs LinearRegression    46 1.830158 0.249698      10.904336 1.473645e-26   7.280948e-207
+        Stacking vs Persistence    46 1.830158 0.242997      10.919388 1.266136e-26   2.488798e-208
+LinearRegression vs Persistence    46 0.249698 0.242997       4.083774 4.700345e-05    2.723078e-37
+
+Trọng số meta-learner:
+  Seed  Intercept  n_meta_samples  RandomForest  ExtraTrees  GradientBoosting  AdaBoost  XGBoost  CatBoost  Tổng hệ số
+   42    -6.0426            4355       -0.2598      0.2670           -0.7070    1.0625   0.6317    0.3319      1.3263
+   43    -5.3789            4355       -0.1836      0.5184           -0.8353    1.1048   0.5347    0.1330      1.2719
+   44    -5.0557            4355       -0.1971      0.6077           -0.7344    1.0474   0.5556   -0.0261      1.2532
+   45    -4.7904            4355       -0.7085      1.1909           -0.4572    1.0509   0.4970   -0.3456      1.2275
+   46    -6.3974            4355       -0.1212      0.0493           -0.8807    1.0799   0.5925    0.6225      1.3423
+
+Thời gian:
+            Model  Train_time_s_median  Train_time_s_min  Train_time_s_max  Infer_ms_per_sample_median  Infer_total_s_median  n_runs  n_test
+     Persistence             0.000002          0.000002          0.000002                    0.000001              0.000002       1    1307
+LinearRegression             0.006257          0.006257          0.006257                    0.000691              0.000903       1    1307
+    RandomForest             3.754951          1.990825          4.966175                    0.016005              0.020918       5    1307
+      ExtraTrees             1.226479          1.172325          2.832052                    0.016330              0.021343       5    1307
+GradientBoosting             1.045913          0.699724          1.523106                    0.003275              0.004281       5    1307
+        AdaBoost             0.886526          0.439367          1.466205                    0.038253              0.049996       5    1307
+         XGBoost             0.469623          0.201888          0.599172                    0.002613              0.003415       5    1307
+        CatBoost             0.464337          0.259351          0.697376                    0.002538              0.003318       5    1307
+        Stacking            33.326682         18.456775         43.151372                    0.115442              0.150882       5    1307
+   seed=42 Persistence       RMSE=0.2430  train=0.00s
+   seed=42 LinearRegression  RMSE=0.9977  train=0.01s
+   seed=42 RandomForest      RMSE=0.6639  train=3.95s
+   seed=42 ExtraTrees        RMSE=0.5111  train=2.65s
+   seed=42 GradientBoosting  RMSE=0.7935  train=1.57s
+   seed=42 AdaBoost          RMSE=1.6110  train=1.37s
+   seed=42 XGBoost           RMSE=0.8836  train=0.43s
+   seed=42 CatBoost          RMSE=0.8178  train=0.46s
+   seed=42 Stacking          RMSE=2.3664  train=38.00s
+
+Độ nhạy clip COD:
+            Model        R2     RMSE      MAE    MAPE_%  RMSE (không clip COD, seed 42)
+     Persistence  0.977925 0.242997 0.129250  1.132588                        0.242997
+LinearRegression  0.627842 0.997732 0.800954  7.165414                        0.249698
+    RandomForest  0.835199 0.663943 0.484946  4.051869                        0.664815
+      ExtraTrees  0.902340 0.511104 0.376836  3.227298                        0.529208
+GradientBoosting  0.764635 0.793454 0.373759  3.115134                        0.950754
+        AdaBoost  0.029738 1.610998 1.325827 11.625928                        1.489286
+         XGBoost  0.708117 0.883599 0.690937  5.665074                        0.756507
+        CatBoost  0.749960 0.817816 0.654754  5.704903                        0.559761
+        Stacking -1.093588 2.366443 1.865814 16.756157                        1.574637
+   TSS(5) + LinearRegression (mô hình chính): RMSE=1.5746
+   KFold(5) + LinearRegression (như bản cũ): RMSE=1.1284
+   TSS(5) + LinearRegression(positive=True): RMSE=1.3435
+✓ Việc 3–4: Huấn luyện, baseline, kiểm định, thời gian: 502.9 s
+
+======================================================================
+▶ Việc 5: Tầm dự báo dài hơn
+======================================================================
+h=1: train (5207, 17), test (1296, 17)
+   seed=42 Persistence  RMSE=0.2430
+   seed=42 XGBoost      RMSE=0.7102
+   seed=42 Stacking     RMSE=1.1949
+   seed=43 XGBoost      RMSE=0.7102
+   seed=43 Stacking     RMSE=1.1348
+   seed=44 XGBoost      RMSE=0.7102
+   seed=44 Stacking     RMSE=1.0765
+   seed=45 XGBoost      RMSE=0.7102
+   seed=45 Stacking     RMSE=1.0731
+   seed=46 XGBoost      RMSE=0.7102
+   seed=46 Stacking     RMSE=1.0495
+h=6: train (5202, 17), test (1286, 17)
+   seed=42 Persistence  RMSE=0.5720
+   seed=42 XGBoost      RMSE=0.8642
+   seed=42 Stacking     RMSE=1.6723
+   seed=43 XGBoost      RMSE=0.8642
+   seed=43 Stacking     RMSE=1.7798
+   seed=44 XGBoost      RMSE=0.8642
+   seed=44 Stacking     RMSE=1.5696
+   seed=45 XGBoost      RMSE=0.8642
+   seed=45 Stacking     RMSE=1.8914
+   seed=46 XGBoost      RMSE=0.8642
+   seed=46 Stacking     RMSE=1.8772
+h=12: train (5196, 17), test (1274, 17)
+   seed=42 Persistence  RMSE=0.8085
+   seed=42 XGBoost      RMSE=1.1131
+   seed=42 Stacking     RMSE=1.9305
+   seed=43 XGBoost      RMSE=1.1131
+   seed=43 Stacking     RMSE=1.8236
+   seed=44 XGBoost      RMSE=1.1131
+   seed=44 Stacking     RMSE=1.9788
+   seed=45 XGBoost      RMSE=1.1131
+   seed=45 Stacking     RMSE=2.0479
+   seed=46 XGBoost      RMSE=1.1131
+   seed=46 Stacking     RMSE=1.9174
+h=24: train (5184, 17), test (1250, 17)
+   seed=42 Persistence  RMSE=1.0936
+   seed=42 XGBoost      RMSE=1.2713
+   seed=42 Stacking     RMSE=2.2122
+   seed=43 XGBoost      RMSE=1.2713
+   seed=43 Stacking     RMSE=2.3823
+   seed=44 XGBoost      RMSE=1.2713
+   seed=44 Stacking     RMSE=2.6568
+   seed=45 XGBoost      RMSE=1.2713
+   seed=45 Stacking     RMSE=2.4508
+   seed=46 XGBoost      RMSE=1.2713
+   seed=46 Stacking     RMSE=1.8779
+ Horizon_min       Model   R2_mean  RMSE_mean  RMSE_std  Skill_vs_Persistence
+           5 Persistence  0.978044   0.243033  0.000000              0.000000
+           5     XGBoost  0.812531   0.710161  0.000000             -1.922078
+           5    Stacking  0.544443   1.105787  0.058882             -3.549952
+          30 Persistence  0.875450   0.571962  0.000000              0.000000
+          30     XGBoost  0.715643   0.864224  0.000000             -0.510982
+          30    Stacking -0.182465   1.758055  0.137233             -2.073728
+          60 Persistence  0.744563   0.808463  0.000000              0.000000
+          60     XGBoost  0.515800   1.113091  0.000000             -0.376799
+          60    Stacking -0.472424   1.939633  0.082628             -1.399161
+         120 Persistence  0.501104   1.093599  0.000000              0.000000
+         120     XGBoost  0.325751   1.271344  0.000000             -0.162532
+         120    Stacking -1.265986   2.315981  0.292144             -1.117760
+ Horizon_steps                 So sánh  DM_stat (MSE)   DM_p (MSE)  HAC_lag
+             1 Stacking vs Persistence      12.018520 1.274718e-31        7
+             1  XGBoost vs Persistence       3.801575 1.504646e-04        7
+             1     Stacking vs XGBoost       6.950683 5.746005e-12        7
+             6 Stacking vs Persistence      17.702844 6.365033e-63        7
+             6  XGBoost vs Persistence       9.570552 5.229350e-21        7
+             6     Stacking vs XGBoost      13.978123 1.945050e-41        7
+            12 Stacking vs Persistence      12.140835 3.567970e-32       11
+            12  XGBoost vs Persistence       4.575461 5.215636e-06       11
+            12     Stacking vs XGBoost       9.043296 5.526569e-19       11
+            24 Stacking vs Persistence       6.547375 8.531332e-11       23
+            24  XGBoost vs Persistence       1.766449 7.756481e-02       23
+            24     Stacking vs XGBoost       6.915294 7.433016e-12       23
+✓ Việc 5: Tầm dự báo dài hơn: 1240.1 s
+
+======================================================================
+▶ Việc 6: Phần dư
+======================================================================
+  -> D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\figures\fig06_residuals.png
+                                    0            1            2            3                 4             5
+Mô hình                      Stacking      XGBoost     CatBoost   ExtraTrees  LinearRegression   Persistence
+n                                1307         1307         1307         1307              1307          1307
+Mean                         1.275126     0.387921     0.308715     0.127855         -0.018271       0.00443
+Std                          0.924224     0.649725     0.467113     0.513727          0.249124       0.24305
+Skewness                      1.19952    -1.197716    -0.856813    -0.449456         -0.470299     -0.648801
+Kurtosis (excess)            8.331849     4.171763     6.311899     2.750928         21.464024     23.489507
+Shapiro_W                    0.876088     0.937285     0.946501     0.973812          0.782388      0.746595
+Shapiro_p                         0.0          0.0          0.0          0.0               0.0           0.0
+JarqueBera_stat           4093.910727  1260.258511  2329.541259   456.123612      25137.369792  30139.458163
+JarqueBera_p                      0.0          0.0          0.0          0.0               0.0           0.0
+BP_LM (theo ŷ)              94.858103    28.656455    31.034048     0.000945          0.625481      0.619577
+BP_p (theo ŷ)                     0.0          0.0          0.0     0.975472          0.429018      0.431205
+BP_LM (theo 8 đặc trưng)   108.037047    60.334143    93.422544    74.866745         34.443434     32.748511
+BP_p (theo 8 đặc trưng)           0.0          0.0          0.0          0.0          0.000034      0.000068
+LjungBox_Q lag1            349.471661   309.197576   305.899521   489.057292         15.419211     36.288428
+LjungBox_p lag1                   0.0          0.0          0.0          0.0          0.000086           0.0
+LjungBox_Q lag12          2402.052787  2146.006198  2100.210958  4480.621425         62.139721     69.070015
+LjungBox_p lag12                  0.0          0.0          0.0          0.0               0.0           0.0
+ACF lag1                       0.5165     0.485827     0.483229     0.611004         -0.108491     -0.166436
+✓ Việc 6: Phần dư: 2.2 s
+
+======================================================================
+▶ Việc 6: Hình báo cáo
+======================================================================
+  -> D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\figures\fig01_correlation_heatmap.png
+  -> D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\figures\fig02_timeseries_overview.png
+  -> D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\figures\fig03_model_comparison.png
+  -> D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\figures\fig04_actual_vs_predicted.png
+  -> D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\figures\fig05_scatter_actual_pred.png
+  -> D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\figures\fig07_lag_crosscorr.png
+  -> D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\figures\fig12_horizon_rmse.png
+  -> D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\figures\fig13_workflow.png
+✓ Việc 6: Hình báo cáo: 8.2 s
+
+======================================================================
+▶ Việc 6: SHAP
+======================================================================
+SHAP tính trên 500/1307 mẫu test (lấy mẫu ngẫu nhiên, seed 42); nền = 200 mẫu ngẫu nhiên từ train (seed 42).
+ExactExplainer explainer:   0%|          | 1/500 [00:00<?, ?it/s]ExactExplainer explainer:   1%|          | 3/500 [00:21<04:37,  1.79it/s]ExactExplainer explainer:   1%|          | 4/500 [00:22<07:14,  1.14it/s]ExactExplainer explainer:   1%|          | 5/500 [00:23<08:09,  1.01it/s]ExactExplainer explainer:   1%|          | 6/500 [00:25<08:38,  1.05s/it]ExactExplainer explainer:   1%|▏         | 7/500 [00:26<08:58,  1.09s/it]ExactExplainer explainer:   2%|▏         | 8/500 [00:27<09:11,  1.12s/it]ExactExplainer explainer:   2%|▏         | 9/500 [00:28<09:27,  1.16s/it]ExactExplainer explainer:   2%|▏         | 10/500 [00:29<09:28,  1.16s/it]ExactExplainer explainer:   2%|▏         | 11/500 [00:30<09:16,  1.14s/it]ExactExplainer explainer:   2%|▏         | 12/500 [00:32<09:17,  1.14s/it]ExactExplainer explainer:   3%|▎         | 13/500 [00:33<09:25,  1.16s/it]ExactExplainer explainer:   3%|▎         | 14/500 [00:34<09:01,  1.11s/it]ExactExplainer explainer:   3%|▎         | 15/500 [00:35<08:48,  1.09s/it]ExactExplainer explainer:   3%|▎         | 16/500 [00:36<08:51,  1.10s/it]ExactExplainer explainer:   3%|▎         | 17/500 [00:37<08:28,  1.05s/it]ExactExplainer explainer:   4%|▎         | 18/500 [00:38<08:31,  1.06s/it]ExactExplainer explainer:   4%|▍         | 19/500 [00:39<08:48,  1.10s/it]ExactExplainer explainer:   4%|▍         | 20/500 [00:40<08:42,  1.09s/it]ExactExplainer explainer:   4%|▍         | 21/500 [00:41<08:58,  1.12s/it]ExactExplainer explainer:   4%|▍         | 22/500 [00:43<09:04,  1.14s/it]ExactExplainer explainer:   5%|▍         | 23/500 [00:44<09:20,  1.17s/it]ExactExplainer explainer:   5%|▍         | 24/500 [00:45<09:20,  1.18s/it]ExactExplainer explainer:   5%|▌         | 25/500 [00:46<09:25,  1.19s/it]ExactExplainer explainer:   5%|▌         | 26/500 [00:47<09:29,  1.20s/it]ExactExplainer explainer:   5%|▌         | 27/500 [00:49<09:47,  1.24s/it]ExactExplainer explainer:   6%|▌         | 28/500 [00:50<09:57,  1.27s/it]ExactExplainer explainer:   6%|▌         | 29/500 [00:51<09:41,  1.23s/it]ExactExplainer explainer:   6%|▌         | 30/500 [00:53<09:45,  1.24s/it]ExactExplainer explainer:   6%|▌         | 31/500 [00:54<09:34,  1.23s/it]ExactExplainer explainer:   6%|▋         | 32/500 [00:55<09:12,  1.18s/it]ExactExplainer explainer:   7%|▋         | 33/500 [00:56<09:03,  1.16s/it]ExactExplainer explainer:   7%|▋         | 34/500 [00:57<09:07,  1.17s/it]ExactExplainer explainer:   7%|▋         | 35/500 [00:58<09:03,  1.17s/it]ExactExplainer explainer:   7%|▋         | 36/500 [00:59<09:06,  1.18s/it]ExactExplainer explainer:   7%|▋         | 37/500 [01:01<09:22,  1.22s/it]ExactExplainer explainer:   8%|▊         | 38/500 [01:02<09:16,  1.20s/it]ExactExplainer explainer:   8%|▊         | 39/500 [01:03<09:29,  1.23s/it]ExactExplainer explainer:   8%|▊         | 40/500 [01:04<09:18,  1.21s/it]ExactExplainer explainer:   8%|▊         | 41/500 [01:06<09:05,  1.19s/it]ExactExplainer explainer:   8%|▊         | 42/500 [01:06<08:30,  1.11s/it]ExactExplainer explainer:   9%|▊         | 43/500 [01:08<08:29,  1.11s/it]ExactExplainer explainer:   9%|▉         | 44/500 [01:09<08:56,  1.18s/it]ExactExplainer explainer:   9%|▉         | 45/500 [01:10<08:58,  1.18s/it]ExactExplainer explainer:   9%|▉         | 46/500 [01:11<09:03,  1.20s/it]ExactExplainer explainer:   9%|▉         | 47/500 [01:13<09:00,  1.19s/it]ExactExplainer explainer:  10%|▉         | 48/500 [01:14<08:46,  1.16s/it]ExactExplainer explainer:  10%|▉         | 49/500 [01:15<08:51,  1.18s/it]ExactExplainer explainer:  10%|█         | 50/500 [01:16<08:36,  1.15s/it]ExactExplainer explainer:  10%|█         | 51/500 [01:17<08:53,  1.19s/it]ExactExplainer explainer:  10%|█         | 52/500 [01:18<09:00,  1.21s/it]ExactExplainer explainer:  11%|█         | 53/500 [01:20<09:06,  1.22s/it]ExactExplainer explainer:  11%|█         | 54/500 [01:21<09:20,  1.26s/it]ExactExplainer explainer:  11%|█         | 55/500 [01:23<09:59,  1.35s/it]ExactExplainer explainer:  11%|█         | 56/500 [01:24<09:46,  1.32s/it]ExactExplainer explainer:  11%|█▏        | 57/500 [01:25<09:16,  1.26s/it]ExactExplainer explainer:  12%|█▏        | 58/500 [01:26<08:55,  1.21s/it]ExactExplainer explainer:  12%|█▏        | 59/500 [01:27<08:42,  1.18s/it]ExactExplainer explainer:  12%|█▏        | 60/500 [01:28<08:31,  1.16s/it]ExactExplainer explainer:  12%|█▏        | 61/500 [01:29<08:15,  1.13s/it]ExactExplainer explainer:  12%|█▏        | 62/500 [01:30<08:15,  1.13s/it]ExactExplainer explainer:  13%|█▎        | 63/500 [01:32<08:08,  1.12s/it]ExactExplainer explainer:  13%|█▎        | 64/500 [01:33<08:08,  1.12s/it]ExactExplainer explainer:  13%|█▎        | 65/500 [01:34<07:43,  1.07s/it]ExactExplainer explainer:  13%|█▎        | 66/500 [01:35<08:15,  1.14s/it]ExactExplainer explainer:  13%|█▎        | 67/500 [01:36<08:46,  1.22s/it]ExactExplainer explainer:  14%|█▎        | 68/500 [01:38<08:50,  1.23s/it]ExactExplainer explainer:  14%|█▍        | 69/500 [01:39<09:20,  1.30s/it]ExactExplainer explainer:  14%|█▍        | 70/500 [01:40<09:11,  1.28s/it]ExactExplainer explainer:  14%|█▍        | 71/500 [01:41<08:59,  1.26s/it]ExactExplainer explainer:  14%|█▍        | 72/500 [01:43<08:53,  1.25s/it]ExactExplainer explainer:  15%|█▍        | 73/500 [01:44<08:46,  1.23s/it]ExactExplainer explainer:  15%|█▍        | 74/500 [01:45<08:32,  1.20s/it]ExactExplainer explainer:  15%|█▌        | 75/500 [01:46<08:25,  1.19s/it]ExactExplainer explainer:  15%|█▌        | 76/500 [01:47<08:18,  1.17s/it]ExactExplainer explainer:  15%|█▌        | 77/500 [01:49<08:19,  1.18s/it]ExactExplainer explainer:  16%|█▌        | 78/500 [01:50<08:33,  1.22s/it]ExactExplainer explainer:  16%|█▌        | 79/500 [01:51<08:31,  1.21s/it]ExactExplainer explainer:  16%|█▌        | 80/500 [01:52<08:11,  1.17s/it]ExactExplainer explainer:  16%|█▌        | 81/500 [01:53<08:00,  1.15s/it]ExactExplainer explainer:  16%|█▋        | 82/500 [01:55<08:18,  1.19s/it]ExactExplainer explainer:  17%|█▋        | 83/500 [01:56<08:29,  1.22s/it]ExactExplainer explainer:  17%|█▋        | 84/500 [01:57<08:14,  1.19s/it]ExactExplainer explainer:  17%|█▋        | 85/500 [01:58<08:12,  1.19s/it]ExactExplainer explainer:  17%|█▋        | 86/500 [01:59<08:08,  1.18s/it]ExactExplainer explainer:  17%|█▋        | 87/500 [02:01<08:29,  1.23s/it]ExactExplainer explainer:  18%|█▊        | 88/500 [02:02<08:45,  1.27s/it]ExactExplainer explainer:  18%|█▊        | 89/500 [02:03<09:05,  1.33s/it]ExactExplainer explainer:  18%|█▊        | 90/500 [02:05<08:58,  1.31s/it]ExactExplainer explainer:  18%|█▊        | 91/500 [02:06<09:19,  1.37s/it]ExactExplainer explainer:  18%|█▊        | 92/500 [02:07<08:32,  1.26s/it]ExactExplainer explainer:  19%|█▊        | 93/500 [02:08<07:51,  1.16s/it]ExactExplainer explainer:  19%|█▉        | 94/500 [02:09<06:39,  1.02it/s]ExactExplainer explainer:  19%|█▉        | 95/500 [02:10<06:58,  1.03s/it]ExactExplainer explainer:  19%|█▉        | 96/500 [02:11<06:52,  1.02s/it]ExactExplainer explainer:  19%|█▉        | 97/500 [02:12<07:11,  1.07s/it]ExactExplainer explainer:  20%|█▉        | 98/500 [02:13<07:42,  1.15s/it]ExactExplainer explainer:  20%|█▉        | 99/500 [02:15<07:39,  1.15s/it]ExactExplainer explainer:  20%|██        | 100/500 [02:16<08:01,  1.20s/it]ExactExplainer explainer:  20%|██        | 101/500 [02:17<08:10,  1.23s/it]ExactExplainer explainer:  20%|██        | 102/500 [02:18<08:07,  1.22s/it]ExactExplainer explainer:  21%|██        | 103/500 [02:20<08:05,  1.22s/it]ExactExplainer explainer:  21%|██        | 104/500 [02:21<08:20,  1.26s/it]ExactExplainer explainer:  21%|██        | 105/500 [02:22<08:11,  1.24s/it]ExactExplainer explainer:  21%|██        | 106/500 [02:23<08:18,  1.27s/it]ExactExplainer explainer:  21%|██▏       | 107/500 [02:25<08:17,  1.26s/it]ExactExplainer explainer:  22%|██▏       | 108/500 [02:26<08:27,  1.30s/it]ExactExplainer explainer:  22%|██▏       | 109/500 [02:27<08:33,  1.31s/it]ExactExplainer explainer:  22%|██▏       | 110/500 [02:29<08:10,  1.26s/it]ExactExplainer explainer:  22%|██▏       | 111/500 [02:30<08:07,  1.25s/it]ExactExplainer explainer:  22%|██▏       | 112/500 [02:31<07:53,  1.22s/it]ExactExplainer explainer:  23%|██▎       | 113/500 [02:32<07:59,  1.24s/it]ExactExplainer explainer:  23%|██▎       | 114/500 [02:33<07:43,  1.20s/it]ExactExplainer explainer:  23%|██▎       | 115/500 [02:34<07:31,  1.17s/it]ExactExplainer explainer:  23%|██▎       | 116/500 [02:36<07:31,  1.18s/it]ExactExplainer explainer:  23%|██▎       | 117/500 [02:37<07:31,  1.18s/it]ExactExplainer explainer:  24%|██▎       | 118/500 [02:38<07:40,  1.20s/it]ExactExplainer explainer:  24%|██▍       | 119/500 [02:39<07:51,  1.24s/it]ExactExplainer explainer:  24%|██▍       | 120/500 [02:41<07:40,  1.21s/it]ExactExplainer explainer:  24%|██▍       | 121/500 [02:42<07:54,  1.25s/it]ExactExplainer explainer:  24%|██▍       | 122/500 [02:43<07:54,  1.26s/it]ExactExplainer explainer:  25%|██▍       | 123/500 [02:44<07:50,  1.25s/it]ExactExplainer explainer:  25%|██▍       | 124/500 [02:46<07:37,  1.22s/it]ExactExplainer explainer:  25%|██▌       | 125/500 [02:47<07:39,  1.23s/it]ExactExplainer explainer:  25%|██▌       | 126/500 [02:48<07:48,  1.25s/it]ExactExplainer explainer:  25%|██▌       | 127/500 [02:49<07:54,  1.27s/it]ExactExplainer explainer:  26%|██▌       | 128/500 [02:51<07:36,  1.23s/it]ExactExplainer explainer:  26%|██▌       | 129/500 [02:52<07:58,  1.29s/it]ExactExplainer explainer:  26%|██▌       | 130/500 [02:53<07:55,  1.29s/it]ExactExplainer explainer:  26%|██▌       | 131/500 [02:54<07:49,  1.27s/it]ExactExplainer explainer:  26%|██▋       | 132/500 [02:56<07:32,  1.23s/it]ExactExplainer explainer:  27%|██▋       | 133/500 [02:57<07:36,  1.24s/it]ExactExplainer explainer:  27%|██▋       | 134/500 [02:58<07:50,  1.28s/it]ExactExplainer explainer:  27%|██▋       | 135/500 [03:00<08:16,  1.36s/it]ExactExplainer explainer:  27%|██▋       | 136/500 [03:01<07:59,  1.32s/it]ExactExplainer explainer:  27%|██▋       | 137/500 [03:02<08:00,  1.32s/it]ExactExplainer explainer:  28%|██▊       | 138/500 [03:04<07:39,  1.27s/it]ExactExplainer explainer:  28%|██▊       | 139/500 [03:05<07:40,  1.27s/it]ExactExplainer explainer:  28%|██▊       | 140/500 [03:06<07:33,  1.26s/it]ExactExplainer explainer:  28%|██▊       | 141/500 [03:08<07:57,  1.33s/it]ExactExplainer explainer:  28%|██▊       | 142/500 [03:09<08:25,  1.41s/it]ExactExplainer explainer:  29%|██▊       | 143/500 [03:10<08:17,  1.39s/it]ExactExplainer explainer:  29%|██▉       | 144/500 [03:12<08:13,  1.38s/it]ExactExplainer explainer:  29%|██▉       | 145/500 [03:13<07:50,  1.33s/it]ExactExplainer explainer:  29%|██▉       | 146/500 [03:14<07:39,  1.30s/it]ExactExplainer explainer:  29%|██▉       | 147/500 [03:16<07:41,  1.31s/it]ExactExplainer explainer:  30%|██▉       | 148/500 [03:17<07:24,  1.26s/it]ExactExplainer explainer:  30%|██▉       | 149/500 [03:18<07:16,  1.24s/it]ExactExplainer explainer:  30%|███       | 150/500 [03:19<07:16,  1.25s/it]ExactExplainer explainer:  30%|███       | 151/500 [03:21<07:24,  1.27s/it]ExactExplainer explainer:  30%|███       | 152/500 [03:22<07:23,  1.28s/it]ExactExplainer explainer:  31%|███       | 153/500 [03:23<07:14,  1.25s/it]ExactExplainer explainer:  31%|███       | 154/500 [03:24<07:07,  1.23s/it]ExactExplainer explainer:  31%|███       | 155/500 [03:26<07:21,  1.28s/it]ExactExplainer explainer:  31%|███       | 156/500 [03:27<07:18,  1.27s/it]ExactExplainer explainer:  31%|███▏      | 157/500 [03:28<07:21,  1.29s/it]ExactExplainer explainer:  32%|███▏      | 158/500 [03:29<07:23,  1.30s/it]ExactExplainer explainer:  32%|███▏      | 159/500 [03:31<07:09,  1.26s/it]ExactExplainer explainer:  32%|███▏      | 160/500 [03:32<07:10,  1.26s/it]ExactExplainer explainer:  32%|███▏      | 161/500 [03:33<07:23,  1.31s/it]ExactExplainer explainer:  32%|███▏      | 162/500 [03:35<07:25,  1.32s/it]ExactExplainer explainer:  33%|███▎      | 163/500 [03:36<07:14,  1.29s/it]ExactExplainer explainer:  33%|███▎      | 164/500 [03:37<07:22,  1.32s/it]ExactExplainer explainer:  33%|███▎      | 165/500 [03:38<07:01,  1.26s/it]ExactExplainer explainer:  33%|███▎      | 166/500 [03:40<06:49,  1.23s/it]ExactExplainer explainer:  33%|███▎      | 167/500 [03:41<06:27,  1.17s/it]ExactExplainer explainer:  34%|███▎      | 168/500 [03:42<06:34,  1.19s/it]ExactExplainer explainer:  34%|███▍      | 169/500 [03:43<06:34,  1.19s/it]ExactExplainer explainer:  34%|███▍      | 170/500 [03:44<06:26,  1.17s/it]ExactExplainer explainer:  34%|███▍      | 171/500 [03:45<06:11,  1.13s/it]ExactExplainer explainer:  34%|███▍      | 172/500 [03:46<06:10,  1.13s/it]ExactExplainer explainer:  35%|███▍      | 173/500 [03:47<06:04,  1.11s/it]ExactExplainer explainer:  35%|███▍      | 174/500 [03:49<06:06,  1.12s/it]ExactExplainer explainer:  35%|███▌      | 175/500 [03:50<06:05,  1.13s/it]ExactExplainer explainer:  35%|███▌      | 176/500 [03:51<05:59,  1.11s/it]ExactExplainer explainer:  35%|███▌      | 177/500 [03:52<05:49,  1.08s/it]ExactExplainer explainer:  36%|███▌      | 178/500 [03:53<05:50,  1.09s/it]ExactExplainer explainer:  36%|███▌      | 179/500 [03:54<06:01,  1.12s/it]ExactExplainer explainer:  36%|███▌      | 180/500 [03:55<06:13,  1.17s/it]ExactExplainer explainer:  36%|███▌      | 181/500 [03:57<06:21,  1.20s/it]ExactExplainer explainer:  36%|███▋      | 182/500 [03:58<06:37,  1.25s/it]ExactExplainer explainer:  37%|███▋      | 183/500 [03:59<06:43,  1.27s/it]ExactExplainer explainer:  37%|███▋      | 184/500 [04:00<06:34,  1.25s/it]ExactExplainer explainer:  37%|███▋      | 185/500 [04:02<06:23,  1.22s/it]ExactExplainer explainer:  37%|███▋      | 186/500 [04:03<06:38,  1.27s/it]ExactExplainer explainer:  37%|███▋      | 187/500 [04:04<06:27,  1.24s/it]ExactExplainer explainer:  38%|███▊      | 188/500 [04:05<05:47,  1.11s/it]ExactExplainer explainer:  38%|███▊      | 189/500 [04:06<05:28,  1.06s/it]ExactExplainer explainer:  38%|███▊      | 190/500 [04:07<04:46,  1.08it/s]ExactExplainer explainer:  38%|███▊      | 191/500 [04:07<04:12,  1.23it/s]ExactExplainer explainer:  38%|███▊      | 192/500 [04:08<03:43,  1.38it/s]ExactExplainer explainer:  39%|███▊      | 193/500 [04:08<03:21,  1.52it/s]ExactExplainer explainer:  39%|███▉      | 194/500 [04:09<03:06,  1.64it/s]ExactExplainer explainer:  39%|███▉      | 195/500 [04:09<02:54,  1.75it/s]ExactExplainer explainer:  39%|███▉      | 196/500 [04:10<02:48,  1.80it/s]ExactExplainer explainer:  39%|███▉      | 197/500 [04:10<02:50,  1.77it/s]ExactExplainer explainer:  40%|███▉      | 198/500 [04:11<03:55,  1.28it/s]ExactExplainer explainer:  40%|███▉      | 199/500 [04:13<04:36,  1.09it/s]ExactExplainer explainer:  40%|████      | 200/500 [04:14<05:15,  1.05s/it]ExactExplainer explainer:  40%|████      | 201/500 [04:15<05:41,  1.14s/it]ExactExplainer explainer:  40%|████      | 202/500 [04:17<05:55,  1.19s/it]ExactExplainer explainer:  41%|████      | 203/500 [04:18<05:58,  1.21s/it]ExactExplainer explainer:  41%|████      | 204/500 [04:19<06:06,  1.24s/it]ExactExplainer explainer:  41%|████      | 205/500 [04:21<06:08,  1.25s/it]ExactExplainer explainer:  41%|████      | 206/500 [04:21<05:36,  1.15s/it]ExactExplainer explainer:  41%|████▏     | 207/500 [04:22<04:44,  1.03it/s]ExactExplainer explainer:  42%|████▏     | 208/500 [04:23<04:10,  1.17it/s]ExactExplainer explainer:  42%|████▏     | 209/500 [04:23<03:41,  1.31it/s]ExactExplainer explainer:  42%|████▏     | 210/500 [04:24<03:29,  1.38it/s]ExactExplainer explainer:  42%|████▏     | 211/500 [04:25<04:10,  1.16it/s]ExactExplainer explainer:  42%|████▏     | 212/500 [04:26<04:20,  1.11it/s]ExactExplainer explainer:  43%|████▎     | 213/500 [04:27<04:49,  1.01s/it]ExactExplainer explainer:  43%|████▎     | 214/500 [04:29<05:08,  1.08s/it]ExactExplainer explainer:  43%|████▎     | 215/500 [04:30<05:23,  1.13s/it]ExactExplainer explainer:  43%|████▎     | 216/500 [04:31<05:35,  1.18s/it]ExactExplainer explainer:  43%|████▎     | 217/500 [04:33<05:56,  1.26s/it]ExactExplainer explainer:  44%|████▎     | 218/500 [04:34<06:12,  1.32s/it]ExactExplainer explainer:  44%|████▍     | 219/500 [04:35<06:00,  1.28s/it]ExactExplainer explainer:  44%|████▍     | 220/500 [04:36<05:49,  1.25s/it]ExactExplainer explainer:  44%|████▍     | 221/500 [04:38<05:56,  1.28s/it]ExactExplainer explainer:  44%|████▍     | 222/500 [04:39<06:01,  1.30s/it]ExactExplainer explainer:  45%|████▍     | 223/500 [04:40<05:57,  1.29s/it]ExactExplainer explainer:  45%|████▍     | 224/500 [04:42<06:05,  1.32s/it]ExactExplainer explainer:  45%|████▌     | 225/500 [04:43<06:06,  1.33s/it]ExactExplainer explainer:  45%|████▌     | 226/500 [04:44<05:50,  1.28s/it]ExactExplainer explainer:  45%|████▌     | 227/500 [04:45<05:40,  1.25s/it]ExactExplainer explainer:  46%|████▌     | 228/500 [04:47<05:42,  1.26s/it]ExactExplainer explainer:  46%|████▌     | 229/500 [04:48<05:53,  1.30s/it]ExactExplainer explainer:  46%|████▌     | 230/500 [04:49<05:34,  1.24s/it]ExactExplainer explainer:  46%|████▌     | 231/500 [04:50<05:22,  1.20s/it]ExactExplainer explainer:  46%|████▋     | 232/500 [04:51<05:18,  1.19s/it]ExactExplainer explainer:  47%|████▋     | 233/500 [04:53<05:19,  1.20s/it]ExactExplainer explainer:  47%|████▋     | 234/500 [04:54<05:13,  1.18s/it]ExactExplainer explainer:  47%|████▋     | 235/500 [04:55<05:09,  1.17s/it]ExactExplainer explainer:  47%|████▋     | 236/500 [04:56<05:09,  1.17s/it]ExactExplainer explainer:  47%|████▋     | 237/500 [04:57<05:04,  1.16s/it]ExactExplainer explainer:  48%|████▊     | 238/500 [04:58<04:58,  1.14s/it]ExactExplainer explainer:  48%|████▊     | 239/500 [04:59<04:57,  1.14s/it]ExactExplainer explainer:  48%|████▊     | 240/500 [05:01<04:53,  1.13s/it]ExactExplainer explainer:  48%|████▊     | 241/500 [05:02<04:52,  1.13s/it]ExactExplainer explainer:  48%|████▊     | 242/500 [05:03<05:01,  1.17s/it]ExactExplainer explainer:  49%|████▊     | 243/500 [05:04<04:56,  1.15s/it]ExactExplainer explainer:  49%|████▉     | 244/500 [05:05<05:04,  1.19s/it]ExactExplainer explainer:  49%|████▉     | 245/500 [05:06<04:59,  1.17s/it]ExactExplainer explainer:  49%|████▉     | 246/500 [05:08<04:59,  1.18s/it]ExactExplainer explainer:  49%|████▉     | 247/500 [05:09<04:55,  1.17s/it]ExactExplainer explainer:  50%|████▉     | 248/500 [05:10<05:19,  1.27s/it]ExactExplainer explainer:  50%|████▉     | 249/500 [05:12<05:11,  1.24s/it]ExactExplainer explainer:  50%|█████     | 250/500 [05:13<05:02,  1.21s/it]ExactExplainer explainer:  50%|█████     | 251/500 [05:14<05:12,  1.26s/it]ExactExplainer explainer:  50%|█████     | 252/500 [05:15<05:21,  1.30s/it]ExactExplainer explainer:  51%|█████     | 253/500 [05:17<05:21,  1.30s/it]ExactExplainer explainer:  51%|█████     | 254/500 [05:18<05:14,  1.28s/it]ExactExplainer explainer:  51%|█████     | 255/500 [05:19<05:06,  1.25s/it]ExactExplainer explainer:  51%|█████     | 256/500 [05:21<05:18,  1.31s/it]ExactExplainer explainer:  51%|█████▏    | 257/500 [05:22<05:23,  1.33s/it]ExactExplainer explainer:  52%|█████▏    | 258/500 [05:23<05:23,  1.34s/it]ExactExplainer explainer:  52%|█████▏    | 259/500 [05:24<05:11,  1.29s/it]ExactExplainer explainer:  52%|█████▏    | 260/500 [05:26<05:09,  1.29s/it]ExactExplainer explainer:  52%|█████▏    | 261/500 [05:27<05:10,  1.30s/it]ExactExplainer explainer:  52%|█████▏    | 262/500 [05:28<05:07,  1.29s/it]ExactExplainer explainer:  53%|█████▎    | 263/500 [05:29<04:53,  1.24s/it]ExactExplainer explainer:  53%|█████▎    | 264/500 [05:31<04:44,  1.21s/it]ExactExplainer explainer:  53%|█████▎    | 265/500 [05:32<04:56,  1.26s/it]ExactExplainer explainer:  53%|█████▎    | 266/500 [05:33<04:48,  1.23s/it]ExactExplainer explainer:  53%|█████▎    | 267/500 [05:34<04:41,  1.21s/it]ExactExplainer explainer:  54%|█████▎    | 268/500 [05:36<04:39,  1.20s/it]ExactExplainer explainer:  54%|█████▍    | 269/500 [05:37<04:38,  1.21s/it]ExactExplainer explainer:  54%|█████▍    | 270/500 [05:38<04:43,  1.23s/it]ExactExplainer explainer:  54%|█████▍    | 271/500 [05:39<04:31,  1.19s/it]ExactExplainer explainer:  54%|█████▍    | 272/500 [05:40<04:29,  1.18s/it]ExactExplainer explainer:  55%|█████▍    | 273/500 [05:41<04:25,  1.17s/it]ExactExplainer explainer:  55%|█████▍    | 274/500 [05:43<04:31,  1.20s/it]ExactExplainer explainer:  55%|█████▌    | 275/500 [05:44<04:25,  1.18s/it]ExactExplainer explainer:  55%|█████▌    | 276/500 [05:45<04:33,  1.22s/it]ExactExplainer explainer:  55%|█████▌    | 277/500 [05:46<04:33,  1.23s/it]ExactExplainer explainer:  56%|█████▌    | 278/500 [05:48<04:31,  1.22s/it]ExactExplainer explainer:  56%|█████▌    | 279/500 [05:49<04:25,  1.20s/it]ExactExplainer explainer:  56%|█████▌    | 280/500 [05:50<04:24,  1.20s/it]ExactExplainer explainer:  56%|█████▌    | 281/500 [05:51<04:20,  1.19s/it]ExactExplainer explainer:  56%|█████▋    | 282/500 [05:52<04:17,  1.18s/it]ExactExplainer explainer:  57%|█████▋    | 283/500 [05:54<04:23,  1.21s/it]ExactExplainer explainer:  57%|█████▋    | 284/500 [05:55<04:30,  1.25s/it]ExactExplainer explainer:  57%|█████▋    | 285/500 [05:56<04:27,  1.24s/it]ExactExplainer explainer:  57%|█████▋    | 286/500 [05:58<04:40,  1.31s/it]ExactExplainer explainer:  57%|█████▋    | 287/500 [05:59<04:42,  1.33s/it]ExactExplainer explainer:  58%|█████▊    | 288/500 [06:00<04:41,  1.33s/it]ExactExplainer explainer:  58%|█████▊    | 289/500 [06:02<04:35,  1.30s/it]ExactExplainer explainer:  58%|█████▊    | 290/500 [06:03<04:37,  1.32s/it]ExactExplainer explainer:  58%|█████▊    | 291/500 [06:04<04:29,  1.29s/it]ExactExplainer explainer:  58%|█████▊    | 292/500 [06:05<04:20,  1.25s/it]ExactExplainer explainer:  59%|█████▊    | 293/500 [06:07<04:28,  1.30s/it]ExactExplainer explainer:  59%|█████▉    | 294/500 [06:08<04:19,  1.26s/it]ExactExplainer explainer:  59%|█████▉    | 295/500 [06:09<04:10,  1.22s/it]ExactExplainer explainer:  59%|█████▉    | 296/500 [06:10<04:06,  1.21s/it]ExactExplainer explainer:  59%|█████▉    | 297/500 [06:11<04:11,  1.24s/it]ExactExplainer explainer:  60%|█████▉    | 298/500 [06:13<04:30,  1.34s/it]ExactExplainer explainer:  60%|█████▉    | 299/500 [06:14<04:24,  1.32s/it]ExactExplainer explainer:  60%|██████    | 300/500 [06:16<04:27,  1.34s/it]ExactExplainer explainer:  60%|██████    | 301/500 [06:17<04:16,  1.29s/it]ExactExplainer explainer:  60%|██████    | 302/500 [06:18<04:18,  1.31s/it]ExactExplainer explainer:  61%|██████    | 303/500 [06:19<04:10,  1.27s/it]ExactExplainer explainer:  61%|██████    | 304/500 [06:21<04:02,  1.24s/it]ExactExplainer explainer:  61%|██████    | 305/500 [06:22<04:03,  1.25s/it]ExactExplainer explainer:  61%|██████    | 306/500 [06:23<04:10,  1.29s/it]ExactExplainer explainer:  61%|██████▏   | 307/500 [06:24<04:05,  1.27s/it]ExactExplainer explainer:  62%|██████▏   | 308/500 [06:26<04:08,  1.29s/it]ExactExplainer explainer:  62%|██████▏   | 309/500 [06:27<04:04,  1.28s/it]ExactExplainer explainer:  62%|██████▏   | 310/500 [06:28<03:55,  1.24s/it]ExactExplainer explainer:  62%|██████▏   | 311/500 [06:29<03:38,  1.15s/it]ExactExplainer explainer:  62%|██████▏   | 312/500 [06:30<03:24,  1.09s/it]ExactExplainer explainer:  63%|██████▎   | 313/500 [06:31<03:22,  1.08s/it]ExactExplainer explainer:  63%|██████▎   | 314/500 [06:32<03:11,  1.03s/it]ExactExplainer explainer:  63%|██████▎   | 315/500 [06:33<03:12,  1.04s/it]ExactExplainer explainer:  63%|██████▎   | 316/500 [06:34<03:20,  1.09s/it]ExactExplainer explainer:  63%|██████▎   | 317/500 [06:36<03:26,  1.13s/it]ExactExplainer explainer:  64%|██████▎   | 318/500 [06:36<02:54,  1.04it/s]ExactExplainer explainer:  64%|██████▍   | 319/500 [06:37<02:32,  1.19it/s]ExactExplainer explainer:  64%|██████▍   | 320/500 [06:38<02:57,  1.02it/s]ExactExplainer explainer:  64%|██████▍   | 321/500 [06:39<03:16,  1.10s/it]ExactExplainer explainer:  64%|██████▍   | 322/500 [06:40<03:06,  1.05s/it]ExactExplainer explainer:  65%|██████▍   | 323/500 [06:41<02:42,  1.09it/s]ExactExplainer explainer:  65%|██████▍   | 324/500 [06:41<02:22,  1.24it/s]ExactExplainer explainer:  65%|██████▌   | 325/500 [06:42<02:07,  1.37it/s]ExactExplainer explainer:  65%|██████▌   | 326/500 [06:43<02:15,  1.29it/s]ExactExplainer explainer:  65%|██████▌   | 327/500 [06:44<02:52,  1.00it/s]ExactExplainer explainer:  66%|██████▌   | 328/500 [06:45<02:47,  1.03it/s]ExactExplainer explainer:  66%|██████▌   | 329/500 [06:47<03:04,  1.08s/it]ExactExplainer explainer:  66%|██████▌   | 330/500 [06:47<02:41,  1.05it/s]ExactExplainer explainer:  66%|██████▌   | 331/500 [06:49<02:56,  1.05s/it]ExactExplainer explainer:  66%|██████▋   | 332/500 [06:50<03:01,  1.08s/it]ExactExplainer explainer:  67%|██████▋   | 333/500 [06:51<03:12,  1.15s/it]ExactExplainer explainer:  67%|██████▋   | 334/500 [06:52<03:10,  1.15s/it]ExactExplainer explainer:  67%|██████▋   | 335/500 [06:54<03:19,  1.21s/it]ExactExplainer explainer:  67%|██████▋   | 336/500 [06:55<03:16,  1.20s/it]ExactExplainer explainer:  67%|██████▋   | 337/500 [06:56<03:15,  1.20s/it]ExactExplainer explainer:  68%|██████▊   | 338/500 [06:57<03:13,  1.19s/it]ExactExplainer explainer:  68%|██████▊   | 339/500 [06:58<03:06,  1.16s/it]ExactExplainer explainer:  68%|██████▊   | 340/500 [06:59<03:00,  1.13s/it]ExactExplainer explainer:  68%|██████▊   | 341/500 [07:00<02:56,  1.11s/it]ExactExplainer explainer:  68%|██████▊   | 342/500 [07:01<02:57,  1.12s/it]ExactExplainer explainer:  69%|██████▊   | 343/500 [07:02<02:51,  1.09s/it]ExactExplainer explainer:  69%|██████▉   | 344/500 [07:04<02:57,  1.14s/it]ExactExplainer explainer:  69%|██████▉   | 345/500 [07:05<02:54,  1.12s/it]ExactExplainer explainer:  69%|██████▉   | 346/500 [07:06<02:54,  1.13s/it]ExactExplainer explainer:  69%|██████▉   | 347/500 [07:07<02:43,  1.07s/it]ExactExplainer explainer:  70%|██████▉   | 348/500 [07:08<02:44,  1.08s/it]ExactExplainer explainer:  70%|██████▉   | 349/500 [07:09<02:48,  1.11s/it]ExactExplainer explainer:  70%|███████   | 350/500 [07:10<02:47,  1.12s/it]ExactExplainer explainer:  70%|███████   | 351/500 [07:11<02:45,  1.11s/it]ExactExplainer explainer:  70%|███████   | 352/500 [07:13<02:49,  1.14s/it]ExactExplainer explainer:  71%|███████   | 353/500 [07:14<02:40,  1.09s/it]ExactExplainer explainer:  71%|███████   | 354/500 [07:15<02:34,  1.06s/it]ExactExplainer explainer:  71%|███████   | 355/500 [07:16<02:31,  1.05s/it]ExactExplainer explainer:  71%|███████   | 356/500 [07:17<02:34,  1.07s/it]ExactExplainer explainer:  71%|███████▏  | 357/500 [07:18<02:35,  1.09s/it]ExactExplainer explainer:  72%|███████▏  | 358/500 [07:19<02:49,  1.19s/it]ExactExplainer explainer:  72%|███████▏  | 359/500 [07:21<02:50,  1.21s/it]ExactExplainer explainer:  72%|███████▏  | 360/500 [07:22<03:03,  1.31s/it]ExactExplainer explainer:  72%|███████▏  | 361/500 [07:23<02:54,  1.26s/it]ExactExplainer explainer:  72%|███████▏  | 362/500 [07:24<02:43,  1.19s/it]ExactExplainer explainer:  73%|███████▎  | 363/500 [07:25<02:33,  1.12s/it]ExactExplainer explainer:  73%|███████▎  | 364/500 [07:26<02:30,  1.11s/it]ExactExplainer explainer:  73%|███████▎  | 365/500 [07:27<02:26,  1.09s/it]ExactExplainer explainer:  73%|███████▎  | 366/500 [07:28<02:26,  1.09s/it]ExactExplainer explainer:  73%|███████▎  | 367/500 [07:30<02:26,  1.10s/it]ExactExplainer explainer:  74%|███████▎  | 368/500 [07:31<02:27,  1.12s/it]ExactExplainer explainer:  74%|███████▍  | 369/500 [07:32<02:26,  1.12s/it]ExactExplainer explainer:  74%|███████▍  | 370/500 [07:33<02:17,  1.05s/it]ExactExplainer explainer:  74%|███████▍  | 371/500 [07:34<02:16,  1.05s/it]ExactExplainer explainer:  74%|███████▍  | 372/500 [07:35<02:15,  1.06s/it]ExactExplainer explainer:  75%|███████▍  | 373/500 [07:36<02:13,  1.05s/it]ExactExplainer explainer:  75%|███████▍  | 374/500 [07:37<02:14,  1.07s/it]ExactExplainer explainer:  75%|███████▌  | 375/500 [07:38<02:16,  1.09s/it]ExactExplainer explainer:  75%|███████▌  | 376/500 [07:39<02:12,  1.07s/it]ExactExplainer explainer:  75%|███████▌  | 377/500 [07:40<02:13,  1.08s/it]ExactExplainer explainer:  76%|███████▌  | 378/500 [07:41<02:17,  1.12s/it]ExactExplainer explainer:  76%|███████▌  | 379/500 [07:43<02:13,  1.11s/it]ExactExplainer explainer:  76%|███████▌  | 380/500 [07:44<02:10,  1.09s/it]ExactExplainer explainer:  76%|███████▌  | 381/500 [07:45<02:09,  1.08s/it]ExactExplainer explainer:  76%|███████▋  | 382/500 [07:46<02:13,  1.13s/it]ExactExplainer explainer:  77%|███████▋  | 383/500 [07:47<02:09,  1.11s/it]ExactExplainer explainer:  77%|███████▋  | 384/500 [07:48<02:03,  1.07s/it]ExactExplainer explainer:  77%|███████▋  | 385/500 [07:49<02:01,  1.06s/it]ExactExplainer explainer:  77%|███████▋  | 386/500 [07:50<02:01,  1.06s/it]ExactExplainer explainer:  77%|███████▋  | 387/500 [07:51<01:59,  1.05s/it]ExactExplainer explainer:  78%|███████▊  | 388/500 [07:52<02:02,  1.09s/it]ExactExplainer explainer:  78%|███████▊  | 389/500 [07:53<02:00,  1.08s/it]ExactExplainer explainer:  78%|███████▊  | 390/500 [07:54<01:58,  1.07s/it]ExactExplainer explainer:  78%|███████▊  | 391/500 [07:55<01:56,  1.07s/it]ExactExplainer explainer:  78%|███████▊  | 392/500 [07:56<01:52,  1.05s/it]ExactExplainer explainer:  79%|███████▊  | 393/500 [07:58<01:58,  1.11s/it]ExactExplainer explainer:  79%|███████▉  | 394/500 [07:59<01:56,  1.10s/it]ExactExplainer explainer:  79%|███████▉  | 395/500 [08:00<01:54,  1.09s/it]ExactExplainer explainer:  79%|███████▉  | 396/500 [08:01<01:54,  1.10s/it]ExactExplainer explainer:  79%|███████▉  | 397/500 [08:02<01:53,  1.11s/it]ExactExplainer explainer:  80%|███████▉  | 398/500 [08:03<01:56,  1.14s/it]ExactExplainer explainer:  80%|███████▉  | 399/500 [08:04<01:52,  1.11s/it]ExactExplainer explainer:  80%|████████  | 400/500 [08:05<01:51,  1.11s/it]ExactExplainer explainer:  80%|████████  | 401/500 [08:06<01:48,  1.09s/it]ExactExplainer explainer:  80%|████████  | 402/500 [08:07<01:44,  1.07s/it]ExactExplainer explainer:  81%|████████  | 403/500 [08:09<01:41,  1.05s/it]ExactExplainer explainer:  81%|████████  | 404/500 [08:10<01:42,  1.06s/it]ExactExplainer explainer:  81%|████████  | 405/500 [08:11<01:44,  1.10s/it]ExactExplainer explainer:  81%|████████  | 406/500 [08:12<01:39,  1.06s/it]ExactExplainer explainer:  81%|████████▏ | 407/500 [08:13<01:44,  1.13s/it]ExactExplainer explainer:  82%|████████▏ | 408/500 [08:14<01:48,  1.18s/it]ExactExplainer explainer:  82%|████████▏ | 409/500 [08:16<01:53,  1.24s/it]ExactExplainer explainer:  82%|████████▏ | 410/500 [08:17<01:53,  1.26s/it]ExactExplainer explainer:  82%|████████▏ | 411/500 [08:18<01:48,  1.22s/it]ExactExplainer explainer:  82%|████████▏ | 412/500 [08:19<01:41,  1.15s/it]ExactExplainer explainer:  83%|████████▎ | 413/500 [08:20<01:41,  1.16s/it]ExactExplainer explainer:  83%|████████▎ | 414/500 [08:22<01:40,  1.17s/it]ExactExplainer explainer:  83%|████████▎ | 415/500 [08:23<01:37,  1.15s/it]ExactExplainer explainer:  83%|████████▎ | 416/500 [08:24<01:35,  1.14s/it]ExactExplainer explainer:  83%|████████▎ | 417/500 [08:25<01:35,  1.15s/it]ExactExplainer explainer:  84%|████████▎ | 418/500 [08:26<01:33,  1.14s/it]ExactExplainer explainer:  84%|████████▍ | 419/500 [08:27<01:30,  1.12s/it]ExactExplainer explainer:  84%|████████▍ | 420/500 [08:28<01:27,  1.09s/it]ExactExplainer explainer:  84%|████████▍ | 421/500 [08:29<01:24,  1.07s/it]ExactExplainer explainer:  84%|████████▍ | 422/500 [08:30<01:20,  1.03s/it]ExactExplainer explainer:  85%|████████▍ | 423/500 [08:31<01:16,  1.00it/s]ExactExplainer explainer:  85%|████████▍ | 424/500 [08:32<01:16,  1.01s/it]ExactExplainer explainer:  85%|████████▌ | 425/500 [08:33<01:16,  1.02s/it]ExactExplainer explainer:  85%|████████▌ | 426/500 [08:34<01:14,  1.01s/it]ExactExplainer explainer:  85%|████████▌ | 427/500 [08:35<01:03,  1.16it/s]ExactExplainer explainer:  86%|████████▌ | 428/500 [08:36<01:04,  1.12it/s]ExactExplainer explainer:  86%|████████▌ | 429/500 [08:37<01:09,  1.02it/s]ExactExplainer explainer:  86%|████████▌ | 430/500 [08:38<01:07,  1.04it/s]ExactExplainer explainer:  86%|████████▌ | 431/500 [08:39<01:10,  1.02s/it]ExactExplainer explainer:  86%|████████▋ | 432/500 [08:40<01:11,  1.05s/it]ExactExplainer explainer:  87%|████████▋ | 433/500 [08:41<01:10,  1.05s/it]ExactExplainer explainer:  87%|████████▋ | 434/500 [08:42<01:07,  1.03s/it]ExactExplainer explainer:  87%|████████▋ | 435/500 [08:43<01:05,  1.00s/it]ExactExplainer explainer:  87%|████████▋ | 436/500 [08:44<01:02,  1.02it/s]ExactExplainer explainer:  87%|████████▋ | 437/500 [08:45<01:03,  1.02s/it]ExactExplainer explainer:  88%|████████▊ | 438/500 [08:46<01:02,  1.01s/it]ExactExplainer explainer:  88%|████████▊ | 439/500 [08:47<01:03,  1.04s/it]ExactExplainer explainer:  88%|████████▊ | 440/500 [08:48<01:01,  1.03s/it]ExactExplainer explainer:  88%|████████▊ | 441/500 [08:49<01:00,  1.03s/it]ExactExplainer explainer:  88%|████████▊ | 442/500 [08:50<00:59,  1.03s/it]ExactExplainer explainer:  89%|████████▊ | 443/500 [08:51<00:59,  1.05s/it]ExactExplainer explainer:  89%|████████▉ | 444/500 [08:52<01:00,  1.08s/it]ExactExplainer explainer:  89%|████████▉ | 445/500 [08:53<00:59,  1.07s/it]ExactExplainer explainer:  89%|████████▉ | 446/500 [08:55<00:58,  1.09s/it]ExactExplainer explainer:  89%|████████▉ | 447/500 [08:56<00:57,  1.09s/it]ExactExplainer explainer:  90%|████████▉ | 448/500 [08:57<00:56,  1.09s/it]ExactExplainer explainer:  90%|████████▉ | 449/500 [08:58<01:00,  1.18s/it]ExactExplainer explainer:  90%|█████████ | 450/500 [09:00<01:02,  1.25s/it]ExactExplainer explainer:  90%|█████████ | 451/500 [09:01<01:02,  1.27s/it]ExactExplainer explainer:  90%|█████████ | 452/500 [09:02<00:51,  1.08s/it]ExactExplainer explainer:  91%|█████████ | 453/500 [09:03<00:51,  1.10s/it]ExactExplainer explainer:  91%|█████████ | 454/500 [09:04<00:51,  1.11s/it]ExactExplainer explainer:  91%|█████████ | 455/500 [09:05<00:51,  1.14s/it]ExactExplainer explainer:  91%|█████████ | 456/500 [09:06<00:51,  1.16s/it]ExactExplainer explainer:  91%|█████████▏| 457/500 [09:07<00:48,  1.14s/it]ExactExplainer explainer:  92%|█████████▏| 458/500 [09:08<00:48,  1.16s/it]ExactExplainer explainer:  92%|█████████▏| 459/500 [09:09<00:45,  1.11s/it]ExactExplainer explainer:  92%|█████████▏| 460/500 [09:11<00:43,  1.09s/it]ExactExplainer explainer:  92%|█████████▏| 461/500 [09:12<00:44,  1.14s/it]ExactExplainer explainer:  92%|█████████▏| 462/500 [09:13<00:46,  1.23s/it]ExactExplainer explainer:  93%|█████████▎| 463/500 [09:15<00:49,  1.33s/it]ExactExplainer explainer:  93%|█████████▎| 464/500 [09:16<00:48,  1.36s/it]ExactExplainer explainer:  93%|█████████▎| 465/500 [09:17<00:46,  1.33s/it]ExactExplainer explainer:  93%|█████████▎| 466/500 [09:19<00:46,  1.35s/it]ExactExplainer explainer:  93%|█████████▎| 467/500 [09:20<00:43,  1.30s/it]ExactExplainer explainer:  94%|█████████▎| 468/500 [09:21<00:40,  1.28s/it]ExactExplainer explainer:  94%|█████████▍| 469/500 [09:22<00:37,  1.22s/it]ExactExplainer explainer:  94%|█████████▍| 470/500 [09:24<00:36,  1.23s/it]ExactExplainer explainer:  94%|█████████▍| 471/500 [09:25<00:36,  1.24s/it]ExactExplainer explainer:  94%|█████████▍| 472/500 [09:26<00:34,  1.24s/it]ExactExplainer explainer:  95%|█████████▍| 473/500 [09:27<00:32,  1.22s/it]ExactExplainer explainer:  95%|█████████▍| 474/500 [09:28<00:27,  1.06s/it]ExactExplainer explainer:  95%|█████████▌| 475/500 [09:29<00:26,  1.07s/it]ExactExplainer explainer:  95%|█████████▌| 476/500 [09:30<00:27,  1.13s/it]ExactExplainer explainer:  95%|█████████▌| 477/500 [09:32<00:26,  1.15s/it]ExactExplainer explainer:  96%|█████████▌| 478/500 [09:33<00:25,  1.17s/it]ExactExplainer explainer:  96%|█████████▌| 479/500 [09:34<00:24,  1.18s/it]ExactExplainer explainer:  96%|█████████▌| 480/500 [09:35<00:24,  1.23s/it]ExactExplainer explainer:  96%|█████████▌| 481/500 [09:36<00:22,  1.21s/it]ExactExplainer explainer:  96%|█████████▋| 482/500 [09:38<00:20,  1.16s/it]ExactExplainer explainer:  97%|█████████▋| 483/500 [09:39<00:20,  1.19s/it]ExactExplainer explainer:  97%|█████████▋| 484/500 [09:40<00:19,  1.21s/it]ExactExplainer explainer:  97%|█████████▋| 485/500 [09:41<00:18,  1.20s/it]ExactExplainer explainer:  97%|█████████▋| 486/500 [09:42<00:16,  1.15s/it]ExactExplainer explainer:  97%|█████████▋| 487/500 [09:44<00:15,  1.19s/it]ExactExplainer explainer:  98%|█████████▊| 488/500 [09:45<00:13,  1.12s/it]ExactExplainer explainer:  98%|█████████▊| 489/500 [09:46<00:12,  1.11s/it]ExactExplainer explainer:  98%|█████████▊| 490/500 [09:47<00:10,  1.08s/it]ExactExplainer explainer:  98%|█████████▊| 491/500 [09:48<00:09,  1.08s/it]ExactExplainer explainer:  98%|█████████▊| 492/500 [09:49<00:08,  1.12s/it]ExactExplainer explainer:  99%|█████████▊| 493/500 [09:50<00:07,  1.09s/it]ExactExplainer explainer:  99%|█████████▉| 494/500 [09:51<00:06,  1.09s/it]ExactExplainer explainer:  99%|█████████▉| 495/500 [09:52<00:05,  1.12s/it]ExactExplainer explainer:  99%|█████████▉| 496/500 [09:53<00:04,  1.11s/it]ExactExplainer explainer:  99%|█████████▉| 497/500 [09:54<00:03,  1.10s/it]ExactExplainer explainer: 100%|█████████▉| 498/500 [09:55<00:02,  1.07s/it]ExactExplainer explainer: 100%|█████████▉| 499/500 [09:57<00:01,  1.13s/it]ExactExplainer explainer: 100%|██████████| 500/500 [09:58<00:00,  1.22s/it]ExactExplainer explainer: 501it [09:59,  1.02s/it]                         ExactExplainer explainer: 501it [09:59,  1.20s/it]
+Stacking exact SHAP: 599.1s, sai số cộng tính max = 7.28e-14
+  -> D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\figures\fig08_shap_bar.png
+  -> D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\figures\fig09_shap_beeswarm.png
+  -> D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\figures\fig10_shap_compare.png
+  -> D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\figures\fig11_shap_dependence.png
+Mô hình    CatBoost  Stacking  XGBoost
+Đặc trưng                             
+COD          2.7425    3.4573   2.1764
+Color        0.3333    0.1179   0.1023
+Flow1        0.2648    0.2208   0.1032
+Flow2        0.3961    0.2497   0.1424
+NH4+         0.1273    0.0728   0.1167
+TSS          0.1589    0.1277   0.0670
+Temp         0.2402    0.4213   0.2532
+pH           0.3814    0.5310   0.0989
+✓ Việc 6: SHAP: 604.1 s
+
+======================================================================
+▶ Tổng hợp RESULTS.md
+======================================================================
+Đã ghi D:\FIT\UIT\Năm 2026\3. Học máy tiên tiến và ứng dụng\Đồ án cuối kỳ\UIT_DuBaoQuanTrac\outputs\v2\RESULTS.md
+✓ Tổng hợp RESULTS.md: 0.6 s

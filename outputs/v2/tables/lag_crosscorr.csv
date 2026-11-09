@@ -1,0 +1,43 @@
+﻿Mô hình,Chuỗi,Độ trễ k,"corr(ŷ_t, y_t+k)"
+Stacking,mức,-3,0.8511677682099802
+Stacking,mức,-2,0.8582874424532057
+Stacking,mức,-1,0.8662496345294718
+Stacking,mức,0,0.8563140425038985
+Stacking,mức,1,0.8469244981390184
+Stacking,mức,2,0.8350626765644921
+Stacking,mức,3,0.8233602119941964
+Stacking,sai phân,-3,0.06686663479248035
+Stacking,sai phân,-2,-0.012973884515376394
+Stacking,sai phân,-1,0.24514361536615184
+Stacking,sai phân,0,-0.020205870412418794
+Stacking,sai phân,1,0.03336477838338174
+Stacking,sai phân,2,-0.0031401933880532843
+Stacking,sai phân,3,0.020404612562798085
+LinearRegression,mức,-3,0.98170253337557
+LinearRegression,mức,-2,0.9889131671941375
+LinearRegression,mức,-1,0.9997072304336034
+LinearRegression,mức,0,0.988398457326062
+LinearRegression,mức,1,0.9806744678544229
+LinearRegression,mức,2,0.9710403570840778
+LinearRegression,mức,3,0.9607762530535958
+LinearRegression,sai phân,-3,0.09197715775017168
+LinearRegression,sai phân,-2,-0.16355238298950292
+LinearRegression,sai phân,-1,0.9980596621643065
+LinearRegression,sai phân,0,-0.16498974720373152
+LinearRegression,sai phân,1,0.08419790480176388
+LinearRegression,sai phân,2,0.027503438331233462
+LinearRegression,sai phân,3,0.04920044379757012
+Persistence,mức,-3,0.9814877087960361
+Persistence,mức,-2,0.9889242617190687
+Persistence,mức,-1,1.0
+Persistence,mức,0,0.9889992698400212
+Persistence,mức,1,0.981606359530759
+Persistence,mức,2,0.9721992460798713
+Persistence,mức,3,0.9619542542848198
+Persistence,sai phân,-3,0.08963255328784145
+Persistence,sai phân,-2,-0.1666018246786478
+Persistence,sai phân,-1,1.0
+Persistence,sai phân,0,-0.16644396693322153
+Persistence,sai phân,1,0.08924875730547081
+Persistence,sai phân,2,0.036730792801604524
+Persistence,sai phân,3,0.05650503115984412
