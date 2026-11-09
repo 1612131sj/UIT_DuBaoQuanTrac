@@ -1,52 +1,88 @@
+"""
+Phân tích phần dư của Stacking (seed 42) trên tập test.
+fig06_residuals.png: histogram, residuals vs fitted (+LOWESS), Q-Q plot.
+tables/residual_stats.csv: mean, std, skew, kurtosis, Shapiro–Wilk, Jarque–Bera,
+Breusch–Pagan, Ljung–Box (tự tương quan phần dư).
+"""
 import os
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
-import joblib
-from sklearn.model_selection import train_test_split
-from train_pipeline import create_time_series_data
+from scipy import stats
+import statsmodels.api as sm
+from statsmodels.stats.diagnostic import het_breuschpagan, acorr_ljungbox
 
-# Cấu hình biểu đồ
-plt.rcParams.update({'font.size': 12})
-sns.set_theme(style="whitegrid")
+try:
+    from . import config as C
+    from . import plot_style as S
+except ImportError:
+    import config as C
+    import plot_style as S
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_PATH = os.path.join(BASE_DIR, "data", "processed", "water_quality_cleaned.csv")
-OUTPUTS_DIR = os.path.join(BASE_DIR, "outputs")
+S.setup()
 
-# Đọc dữ liệu và load model
-df = pd.read_csv(DATA_PATH)
-features = ['COD', 'TSS', 'pH', 'Temp', 'NH4+', 'Color', 'Flow2', 'Flow1']
-df_ts = create_time_series_data(df, target_col='COD')
-X = df_ts[features]
-y = df_ts['y_target']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
 
-scaler = joblib.load(os.path.join(BASE_DIR, "models", "minmax_scaler.pkl"))
-model = joblib.load(os.path.join(BASE_DIR, "models", "StackingEnsemble.pkl"))
+def residual_stats(name, y, yhat, X):
+    e = y - yhat
+    sw = stats.shapiro(e)
+    jb = stats.jarque_bera(e)
+    bp_fit = het_breuschpagan(e, sm.add_constant(yhat))
+    bp_x = het_breuschpagan(e, sm.add_constant(X))
+    lb = acorr_ljungbox(e, lags=[1, 6, 12], return_df=True)
+    return {'Mô hình': name, 'n': len(e), 'Mean': e.mean(), 'Std': e.std(ddof=1),
+            'Skewness': stats.skew(e), 'Kurtosis (excess)': stats.kurtosis(e),
+            'Shapiro_W': sw.statistic, 'Shapiro_p': sw.pvalue,
+            'JarqueBera_stat': jb.statistic, 'JarqueBera_p': jb.pvalue,
+            'BP_LM (theo ŷ)': bp_fit[0], 'BP_p (theo ŷ)': bp_fit[1],
+            'BP_LM (theo 8 đặc trưng)': bp_x[0], 'BP_p (theo 8 đặc trưng)': bp_x[1],
+            'LjungBox_Q lag1': lb.loc[1, 'lb_stat'], 'LjungBox_p lag1': lb.loc[1, 'lb_pvalue'],
+            'LjungBox_Q lag12': lb.loc[12, 'lb_stat'], 'LjungBox_p lag12': lb.loc[12, 'lb_pvalue'],
+            'ACF lag1': sm.tsa.acf(e, nlags=1)[1]}
 
-# Dự đoán và tính phần dư
-X_test_scaled = scaler.transform(X_test)
-y_pred = model.predict(X_test_scaled)
-residuals = y_test - y_pred
 
-# Vẽ biểu đồ 1x2 (Histogram và Scatter)
-fig, axes = plt.subplots(1, 2, figsize=(15, 6))
+def main():
+    pr = pd.read_csv(os.path.join(C.TAB_DIR, "predictions_test_h1.csv"))
+    try:
+        from .data_preprocessing import load_dataset
+    except ImportError:
+        from data_preprocessing import load_dataset
+    X = load_dataset(h=1)['X_test']
+    y = pr['y_true'].to_numpy()
+    rows = [residual_stats(n, y, pr[n].to_numpy(), X)
+            for n in ['Stacking', 'XGBoost', 'CatBoost', 'ExtraTrees', 'LinearRegression', 'Persistence']]
+    pd.DataFrame(rows).to_csv(os.path.join(C.TAB_DIR, "residual_stats.csv"), index=False,
+                              encoding='utf-8-sig')
 
-# Biểu đồ 1: Histogram phân phối phần dư
-sns.histplot(residuals, kde=True, ax=axes[0], color='purple')
-axes[0].set_title('Phân phối Phần dư (Residual Distribution)', fontweight='bold')
-axes[0].set_xlabel('Phần dư (Thực tế - Dự báo)')
-axes[0].set_ylabel('Tần suất')
-axes[0].axvline(0, color='red', linestyle='--', linewidth=2)
+    yhat = pr['Stacking'].to_numpy()
+    e = y - yhat
+    fig, axes = plt.subplots(1, 3, figsize=(S.WIDTH, S.WIDTH * 0.36))
+    # (a) histogram
+    axes[0].hist(e, bins=50, color=S.BLUE, alpha=0.85, edgecolor='white', linewidth=0.3)
+    axes[0].axvline(0, color=S.INK, lw=0.9, ls='--')
+    axes[0].set_xlabel('Phần dư = thực tế − dự báo (mg/L)')
+    axes[0].set_ylabel('Số mẫu')
+    axes[0].set_title('(a) Phân phối phần dư')
+    # (b) residuals vs fitted + LOWESS
+    axes[1].scatter(yhat, e, s=5, alpha=0.4, color=S.BLUE, edgecolors='none')
+    lw = sm.nonparametric.lowess(e, yhat, frac=0.3)
+    axes[1].plot(lw[:, 0], lw[:, 1], color=S.RED, lw=1.6, label='LOWESS')
+    axes[1].axhline(0, color=S.INK, lw=0.9, ls='--')
+    axes[1].set_xlabel('Giá trị dự báo (mg/L)')
+    axes[1].set_ylabel('Phần dư (mg/L)')
+    axes[1].set_title('(b) Phần dư – giá trị dự báo')
+    axes[1].legend(frameon=False, loc='upper right')
+    # (c) Q-Q plot
+    (osm, osr), (slope, inter, _) = stats.probplot(e, dist='norm')
+    axes[2].scatter(osm, osr, s=5, alpha=0.5, color=S.BLUE, edgecolors='none')
+    axes[2].plot(osm, slope * osm + inter, color=S.INK, lw=0.9, ls='--')
+    axes[2].set_xlabel('Phân vị lý thuyết N(0,1)')
+    axes[2].set_ylabel('Phân vị phần dư (mg/L)', labelpad=2)
+    axes[2].set_title('(c) Biểu đồ Q-Q')
+    fig.suptitle(f'Phân tích phần dư mô hình Stacking trên tập test (n = {len(e)})', fontsize=10)
+    fig.tight_layout(w_pad=2.5)
+    S.save(fig, os.path.join(C.FIG_DIR, "fig06_residuals.png"))
+    print(pd.DataFrame(rows).T.to_string())
 
-# Biểu đồ 2: Residuals vs Fitted
-sns.scatterplot(x=y_pred, y=residuals, ax=axes[1], color='teal', alpha=0.6)
-axes[1].axhline(0, color='red', linestyle='--', linewidth=2)
-axes[1].set_title('Phần dư vs Giá trị Dự báo (Residuals vs. Fitted)', fontweight='bold')
-axes[1].set_xlabel('Giá trị Dự báo (Predicted COD)')
-axes[1].set_ylabel('Phần dư (Residuals)')
 
-plt.tight_layout()
-plt.savefig(os.path.join(OUTPUTS_DIR, "residual_plots.png"), dpi=300)
-print(f"Hoàn tất! Đã lưu ảnh tại thư mục outputs/residual_plots.png")
+if __name__ == "__main__":
+    main()

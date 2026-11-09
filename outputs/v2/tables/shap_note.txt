@@ -1,0 +1,2 @@
+SHAP tính trên 500/1307 mẫu test (lấy mẫu ngẫu nhiên, seed 42); nền = 200 mẫu ngẫu nhiên từ train (seed 42).
+Thời gian tính SHAP Stacking (exact): 599.1 s; sai số cộng tính lớn nhất: 7.28e-14 mg/L

@@ -20,7 +20,8 @@ docs/
 # Data and Models
 # data/raw
 models/
-outputs/
+outputs/*
+!outputs/v2/
 catboost_info/
 
 # Logs and databases
