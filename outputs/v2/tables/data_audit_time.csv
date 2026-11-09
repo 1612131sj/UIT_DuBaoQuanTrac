@@ -1,0 +1,19 @@
+﻿Mục,Giá trị
+Số bản ghi (file),6544
+Số Timestamp trùng lặp,0
+Bắt đầu,2026-01-01 00:05:00
+Kết thúc,2026-01-23 21:50:00
+Tổng thời gian bao phủ (ngày),22.9062
+Số chu kỳ 5 phút kỳ vọng,6598
+Số chu kỳ bị thiếu,54
+Tỉ lệ đầy đủ theo thời gian (%),99.182
+Số khoảng trống (gap != 5 phút),4
+Số đoạn liên tục,5
+"Số cặp (t, t+1) nếu shift thẳng (cách cũ)",6543
+"Số cặp (t, t+1) hợp lệ (cách đúng 5 phút)",6539
+Số cặp bị loại vì nối qua gap,4
+Mốc chia train/test (bản ghi test đầu tiên),2026-01-19 05:15:00
+Số bản ghi giai đoạn train,5235
+Số bản ghi giai đoạn test,1309
+"Số cặp train (h=1, sau purge)",5231
+Số cặp test (h=1),1307
