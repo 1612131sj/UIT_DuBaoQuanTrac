@@ -31,12 +31,14 @@ LABELS = {'COD': 'COD (mg/L)', 'TSS': 'TSS (mg/L)', 'pH': 'pH', 'Temp': 'Nhiệt
 # Nguồn: QCVN 40:2025/BTNMT – Quy chuẩn kỹ thuật quốc gia về nước thải công nghiệp
 # (tóm tắt: https://luatvietnam.vn/doanh-nghiep/gioi-han-cho-phep-o-nhiem-nuoc-thai-cong-nghiep-btnmt-561-101346-article.html).
 # Giới hạn COD (mg/L) phụ thuộc lưu lượng xả thải F (m³/ngày) và cột A/B/C của nguồn tiếp nhận.
-# Giá trị None nghĩa là chưa cấu hình: ứng dụng chỉ hiển thị dự báo, không phân loại cảnh báo.
 # ------------------------------------------------------------------
 QCVN_40_2025 = {
     'F ≤ 2.000 m³/ngày': {'A': 65, 'B': 90, 'C': 130},
     'F > 2.000 m³/ngày': {'A': 60, 'B': 70, 'C': 90},
 }
+QCVN_NAME = "QCVN 40:2025/BTNMT"
+QCVN_SOURCE = ("https://luatvietnam.vn/doanh-nghiep/"
+               "gioi-han-cho-phep-o-nhiem-nuoc-thai-cong-nghiep-btnmt-561-101346-article.html")
 WARNING_RATIO = 0.8   # mức "cảnh giác" khi dự báo ≥ 80% ngưỡng
 
 st.set_page_config(page_title="Dự báo COD – KCN", layout="wide", page_icon="💧")
@@ -70,22 +72,28 @@ except Exception as e:
 
 # ------------------------------- Thanh bên -------------------------------
 st.sidebar.header("⚙️ Cấu hình")
+
+st.sidebar.subheader("🤖 Mô hình dự báo")
 names = [m for m in METRICS.index if m in MODELS]
 learned = [m for m in names if m != 'Persistence']
 default = METRICS.loc[learned, 'RMSE_mean'].idxmin()
 model_name = st.sidebar.selectbox(
-    "Mô hình dự báo", names, index=names.index(default),
+    "Mô hình", names, index=names.index(default),
     format_func=lambda m: f"{m} (RMSE test = {METRICS.loc[m, 'RMSE_mean']:.3f} mg/L)")
-flow_groups = list(QCVN_40_2025)
-flow_group = st.sidebar.radio("Lưu lượng xả thải F (QCVN 40:2025/BTNMT)", flow_groups, index=1)
-st.sidebar.caption(f"Tham khảo: trung vị Flow1 ≈ {RANGES['Flow1'][2] * 24:,.0f} m³/ngày, "
-                   f"Flow2 ≈ {RANGES['Flow2'][2] * 24:,.0f} m³/ngày (m³/h × 24, dữ liệu train). "
-                   "Mặc định chọn nhóm F > 2.000 m³/ngày (ngưỡng chặt hơn).".replace(',', '.'))
-col = st.sidebar.radio("Cột quy chuẩn", ['A', 'B', 'C'], horizontal=True,
-                       format_func=lambda c: f"Cột {c} (≤ {QCVN_40_2025[flow_group][c]} mg/L)")
-free_input = st.sidebar.checkbox("Nhập số tự do (cho phép ngoài khoảng train)", value=False)
 st.sidebar.caption("Mặc định chọn mô hình học máy có RMSE test thấp nhất. "
                    "Persistence (ŷ(t+1) = COD(t)) là baseline để đối chiếu.")
+free_input = st.sidebar.checkbox("Nhập số tự do (cho phép ngoài khoảng train)", value=False)
+
+st.sidebar.divider()
+st.sidebar.subheader(f"📏 Quy chuẩn so sánh: {QCVN_NAME}")
+flow_groups = list(QCVN_40_2025)
+flow_group = st.sidebar.radio("Lưu lượng nước thải xả ra F", flow_groups, index=1)
+st.sidebar.caption(f"Tham khảo: trung vị Flow1 ≈ {RANGES['Flow1'][2] * 24:,.0f} m³/ngày, "
+                   f"Flow2 ≈ {RANGES['Flow2'][2] * 24:,.0f} m³/ngày (m³/h × 24, dữ liệu train).".replace(',', '.'))
+col = st.sidebar.radio("Cột giá trị giới hạn", ['A', 'B', 'C'], horizontal=True)
+thr = QCVN_40_2025[flow_group][col]
+st.sidebar.success(f"**Giới hạn COD áp dụng: ≤ {thr} mg/L**  \nCột {col} · {flow_group}")
+st.sidebar.caption(f"[Nguồn tóm tắt {QCVN_NAME}]({QCVN_SOURCE})")
 
 # ------------------------------- Nhập liệu -------------------------------
 st.title("💧 Dự báo COD chu kỳ kế tiếp (t + 5 phút)")
@@ -115,30 +123,53 @@ if outside:
                + ". Mô hình dạng cây không ngoại suy được – kết quả kém tin cậy.")
 
 st.divider()
-st.subheader(f"2. Kết quả dự báo COD(t+1) – mô hình {model_name}")
+st.subheader(f"2. Giới hạn COD theo {QCVN_NAME}")
+t1, t2 = st.columns([3, 2])
+with t1:
+    qtab = pd.DataFrame(QCVN_40_2025).T[['A', 'B', 'C']]
+    qtab.index.name = 'Lưu lượng xả F'
+    qtab.columns = [f'Cột {c} (mg/L)' for c in qtab.columns]
+    sel = (flow_group, f'Cột {col} (mg/L)')
+
+    def highlight(df):
+        style = pd.DataFrame('', index=df.index, columns=df.columns)
+        style.loc[sel] = 'background-color: #2a78d6; color: white; font-weight: bold'
+        return style
+
+    st.dataframe(qtab.style.apply(highlight, axis=None), use_container_width=True)
+    st.caption(f"Giá trị giới hạn tối đa cho phép của COD trong nước thải công nghiệp theo {QCVN_NAME}. "
+               "Ô tô màu là ngưỡng đang áp dụng (chọn ở thanh bên).")
+with t2:
+    st.markdown(f"**Cách phân loại cảnh báo** (ngưỡng áp dụng: **{thr} mg/L**)")
+    st.markdown(f"- 🟢 **Đạt quy chuẩn:** COD dự báo < {WARNING_RATIO:.0%} ngưỡng (< {WARNING_RATIO * thr:.0f} mg/L)\n"
+                f"- 🟠 **Cần theo dõi:** từ {WARNING_RATIO:.0%} ngưỡng đến ngưỡng ({WARNING_RATIO * thr:.0f}–{thr} mg/L)\n"
+                f"- 🔴 **Vượt quy chuẩn:** COD dự báo > {thr} mg/L")
+    st.caption(f"Mức {WARNING_RATIO:.0%} là mức cảnh giác do ứng dụng đặt ra, không phải quy định của quy chuẩn.")
+
+st.divider()
+st.subheader(f"3. Kết quả dự báo COD(t+1) – mô hình {model_name}")
 
 if st.button("🚀 Thực hiện dự báo", type="primary"):
     model = MODELS[model_name]
     pred = float(model.predict(x)[0])
-    thr = QCVN_40_2025[flow_group][col]
-    label = f"cột {col}, {flow_group}"
-    c1, c2 = st.columns([1, 2])
-    with c1:
-        st.metric("COD dự báo (mg/L)", f"{pred:.2f}", delta=f"{pred - values['COD']:+.2f} so với COD(t)",
-                  delta_color="inverse")
-    with c2:
-        if thr is None:
-            st.info(f"Chưa cấu hình ngưỡng COD cho {label} trong `QCVN_40_2025` (app.py) – "
-                    "không phân loại cảnh báo.")
-        elif pred > thr:
-            st.error(f"🔴 VƯỢT ngưỡng QCVN 40:2025 ({label}): {pred:.2f} > {thr} mg/L")
-        elif pred >= WARNING_RATIO * thr:
-            st.warning(f"🟠 Gần ngưỡng QCVN 40:2025 ({label}): {pred:.2f} mg/L ≥ "
-                       f"{WARNING_RATIO:.0%} × {thr} mg/L")
-        else:
-            st.success(f"🟢 Dưới ngưỡng QCVN 40:2025 ({label}): {pred:.2f} ≤ {thr} mg/L")
+    ratio = pred / thr
+    label = f"{QCVN_NAME}, cột {col}, {flow_group}"
+    m1, m2, m3 = st.columns(3)
+    m1.metric("COD dự báo (t+5 phút)", f"{pred:.2f} mg/L",
+              delta=f"{pred - values['COD']:+.2f} so với COD(t)", delta_color="inverse")
+    m2.metric(f"Giới hạn {QCVN_NAME}", f"{thr} mg/L", help=f"Cột {col}, {flow_group}")
+    m3.metric("Tỉ lệ so với giới hạn", f"{ratio:.0%}")
+    st.progress(min(ratio, 1.0), text=f"COD dự báo đạt {ratio:.0%} giới hạn cho phép")
+    if pred > thr:
+        st.error(f"🔴 **VƯỢT QUY CHUẨN** – COD dự báo {pred:.2f} mg/L > {thr} mg/L ({label}).")
+    elif pred >= WARNING_RATIO * thr:
+        st.warning(f"🟠 **CẦN THEO DÕI** – COD dự báo {pred:.2f} mg/L, đã ≥ {WARNING_RATIO:.0%} "
+                   f"giới hạn {thr} mg/L ({label}).")
+    else:
+        st.success(f"🟢 **ĐẠT QUY CHUẨN** – COD dự báo {pred:.2f} mg/L < {WARNING_RATIO:.0%} "
+                   f"giới hạn {thr} mg/L ({label}).")
 
-    st.subheader("3. Giải thích dự báo (SHAP waterfall)")
+    st.subheader("4. Giải thích dự báo (SHAP waterfall)")
     st.caption(f"Giá trị Shapley chính xác (thuật toán exact, 2⁸ tổ hợp) cho chính mô hình {model_name}, "
                f"nền = {len(BG)} mẫu ngẫu nhiên từ train, đơn vị mg/L. "
                "Thanh đỏ đẩy dự báo lên, thanh xanh kéo xuống so với giá trị nền E[f(X)].")
